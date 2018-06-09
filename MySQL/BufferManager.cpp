@@ -106,7 +106,10 @@ Block & BufferManager::GetBlock(const std::string & filename, int block_id)
 	{
 		Block & block = GetLRU();
         if (PastTheEndBlockID(filename) == block_id)
+        {
             block.Reset().Flush().SetPinned(true).SetMRUtime(access_counter++).Connect(filename, block_id, false);
+            block.Flush();
+        }
         else
             block.Reset().Flush().SetPinned(true).SetMRUtime(access_counter++).Connect(filename, block_id, true);
         block_map.erase(std::make_pair(block.filename, block.block_id));
