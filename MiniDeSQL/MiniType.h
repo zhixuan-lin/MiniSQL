@@ -13,8 +13,9 @@ namespace MINI_TYPE
 {
     const int BlockSize = 4096;
     const int MaxBlocks = 128;
-    const char Available = 0;
-    
+    const char Empty = 0;
+    const char NonEmpty = 1;
+    const int MaxChar = 256;
 	enum TypeId
 	{
 		MiniInt,
@@ -66,6 +67,8 @@ namespace MINI_TYPE
 		SqlValue(SqlValueType t, float f_val) : type(t), f(f_val) {};
 		SqlValue(SqlValueType t, const std::string & str_val) : type(t), str(str_val) {};
 		std::string ToStr() const;
+		void ReadFromMemory(const char * source, int byte_offset);
+		void WriteToMemory(char * dest, int byte_offset) const;
 		bool operator<(const SqlValue & s) const;
 		bool operator<=(const SqlValue & s) const;
 		bool operator>(const SqlValue & s) const;
@@ -111,20 +114,46 @@ namespace MINI_TYPE
 	{
 		Table (TableInfo i) : info(i) {};
 		TableInfo info;
-		std::vector<Record> tuples;
+		std::vector<Record> records;
     };
 
 	
 
 	struct Condition
 	{
-		Condition(Operator ope, SqlValue val) : op(ope), value(val) {} 
+		Condition(Attribute attr, Operator ope, SqlValue val) : op(ope), value(val), attribute(attr) {} 
 		bool Test(SqlValue val) const;
 	private:
 		Operator op;
 		SqlValue value;
+		Attribute attribute;
     };
 
+    inline void SqlValue::ReadFromMemory(const char * source, int byte_offset)
+    {
+        size_t size = type.TypeSize();
+        char temp[MaxChar];
+    	switch(type.type)
+    	{
+            case MiniInt: std::memcpy(&i, source + byte_offset, size); break;
+    		case MiniFloat: std::memcpy(&f, source + byte_offset, size); break;
+    		case MiniChar: 
+    			std::memcpy(temp, source + byte_offset, size);
+    			temp[size] = '\0';
+    			str = temp; 
+    			break;
+    	}
+    }
+	inline void SqlValue::WriteToMemory(char * dest, int byte_offset) const
+	{
+        size_t size = type.TypeSize();
+		switch(type.type)
+    	{
+    		case MiniInt: std::memcpy(dest + byte_offset, &i, size); break;
+    		case MiniFloat: std::memcpy(dest + byte_offset, &f, size); break;
+    		case MiniChar: std::memcpy(dest + byte_offset, str.c_str(), size); break;
+    	}
+	}
 	inline std::string SqlValue::ToStr() const
 	{
 		switch(type.type)

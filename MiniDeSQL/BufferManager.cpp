@@ -89,7 +89,7 @@ int BufferManager::PastTheEndBlockID(const std::string & filename)
     }
 }
 
-Block & BufferManager::GetBlock(const std::string & filename, int block_id)
+Block * BufferManager::GetBlock(const std::string & filename, int block_id)
 {
     if (block_id > PastTheEndBlockID(filename))
     {
@@ -101,7 +101,7 @@ Block & BufferManager::GetBlock(const std::string & filename, int block_id)
 	{
 		block_iter->second.SetPinned(true);
 		block_iter->second.SetMRUtime(access_counter++);
-		return block_iter->second;
+		return &block_iter->second;
 	}
 	else
 	{
@@ -112,10 +112,10 @@ Block & BufferManager::GetBlock(const std::string & filename, int block_id)
             block.Reset().Flush().SetPinned(true).SetMRUtime(access_counter++).Connect(filename, block_id, true);
         block_map.erase(std::make_pair(block.filename, block.block_id));
         block_map.insert(MapType::value_type(std::make_pair(filename, block_id), block));
-		return block;
+		return &block;
 	}
 }
-Block & BufferManager::FreeBlock(const std::string & filename, int block_id)
+void BufferManager::FreeBlock(const std::string & filename, int block_id)
 {
 	auto block_iter = block_map.find(std::make_pair(filename, block_id));
 	if (block_iter == block_map.end())
@@ -125,7 +125,6 @@ Block & BufferManager::FreeBlock(const std::string & filename, int block_id)
 	}
 	else
 		block_iter->second.SetPinned(false);
-	return block_iter->second;
 }
 void BufferManager::CreateFile(const std::string & filename)
 {

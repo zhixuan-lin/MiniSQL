@@ -1,3 +1,6 @@
+#ifndef BUFFERMANAGER_H_
+#define BUFFERMANAGER_H_
+
 #include <iostream>
 #include <map>
 #include <utility>
@@ -15,7 +18,7 @@ public:
 	Block & Read(void * dest, int offset, std::size_t size);
 	Block & Flush();
     char & operator[](int i) { return content[i]; }
-    
+    char * head_pointer() {return content;}
 private:
     Block & SetMRUtime(int t);
     Block & Reset();
@@ -36,8 +39,8 @@ class BufferManager
 public:
     BufferManager() {};
     ~BufferManager() {FlushAllBlocks();}
-	Block & GetBlock(const std::string & filename, int block_id);
-	Block & FreeBlock(const std::string & filename, int block_id);
+	Block * GetBlock(const std::string & filename, int block_id);
+    void FreeBlock(const std::string & filename, int block_id);
 	void CreateFile(const std::string & filename);
 	void RemoveFile(const std::string & filename);
     int PastTheEndBlockID(const std::string & filename);
@@ -50,3 +53,5 @@ private:
 	Block & GetLRU();
 	int access_counter = 1;
 };
+
+#endif
