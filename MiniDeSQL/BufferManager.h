@@ -1,7 +1,7 @@
 #include <iostream>
 #include <map>
 #include <utility>
-#include "DataStructure.h"
+#include "MiniType.h"
 #include <array>
 
 class BufferManager;
@@ -14,6 +14,7 @@ public:
 	Block & Write(void * source, int offset, std::size_t size);
 	Block & Read(void * dest, int offset, std::size_t size);
 	Block & Flush();
+    char & operator[](int i) { return content[i]; }
     
 private:
     Block & SetMRUtime(int t);
@@ -21,7 +22,7 @@ private:
     Block & Connect(const std::string & filename, int block_id, bool get_content=false);
     Block & SetPinned(bool pinned);
 	bool dirty;
-    char content[MINISQL_BASE::BlockSize];
+    char content[MINI_TYPE::BlockSize];
     std::string filename;
     int block_id;
     int MRUtime;
@@ -45,7 +46,7 @@ private:
     
     using MapType = std::map<std::pair<std::string, int>, Block &>;
     MapType block_map;
-	std::array<Block, MINISQL_BASE::MaxBlocks> blocks;
+	std::array<Block, MINI_TYPE::MaxBlocks> blocks;
 	Block & GetLRU();
 	int access_counter = 1;
 };

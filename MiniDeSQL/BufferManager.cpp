@@ -3,7 +3,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <sys/stat.h>
-#include "DataStructure.h"
+// #include "DataStructure.h"
+#include "MiniType.h"
 #include "BufferManager.h"
 
 
@@ -25,11 +26,11 @@ Block & Block::Connect(const std::string & filename, int block_id, bool get_cont
             std::cerr << "Cannot open file " + filename + ".\n";
             std::exit(0);
         }
-        fin.seekg(block_id * MINISQL_BASE::BlockSize);
-        char temp[MINISQL_BASE::BlockSize];
-        fin.read(temp, MINISQL_BASE::BlockSize);
+        fin.seekg(block_id * MINI_TYPE::BlockSize);
+        char temp[MINI_TYPE::BlockSize];
+        fin.read(temp, MINI_TYPE::BlockSize);
         fin.close();
-        Write(temp, 0, MINISQL_BASE::BlockSize);
+        Write(temp, 0, MINI_TYPE::BlockSize);
     }
 	return *this;
 }
@@ -37,7 +38,7 @@ Block & Block::Connect(const std::string & filename, int block_id, bool get_cont
 Block & Block::Reset()
 {
 	dirty = pinned = false;
-	memset(content, 0, MINISQL_BASE::BlockSize);
+	memset(content, 0, MINI_TYPE::BlockSize);
 	MRUtime = 0;
     return *this;
 }
@@ -62,8 +63,8 @@ Block & Block::Flush()
 	{
 		dirty = false;
         std::ofstream fout(filename, std::ios_base::binary | std::ios_base::app);
-		fout.seekp(block_id * MINISQL_BASE::BlockSize);
-		fout.write(content, MINISQL_BASE::BlockSize);
+		fout.seekp(block_id * MINI_TYPE::BlockSize);
+		fout.write(content, MINI_TYPE::BlockSize);
 		fout.close();
 	}
 	
@@ -79,7 +80,7 @@ int BufferManager::PastTheEndBlockID(const std::string & filename)
 {
     struct stat st;
     if (stat(filename.c_str(), &st) == 0) {
-        return int(st.st_size / MINISQL_BASE::BlockSize);
+        return int(st.st_size / MINI_TYPE::BlockSize);
     }
     else
     {

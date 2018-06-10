@@ -5,18 +5,15 @@
 #include <vector>
 #include "BufferManager.h"
 #include "IndexManager.hpp"
-#include "DataStructure.h"
-
+#include "MiniType.h"
 
 int main()
 {
     IndexManager im;
-    MINISQL_BASE::SqlValueType type;
-    type.attrName = "no";
-    type.type = MINISQL_BASE::SqlValueTypeBase::Integer;
+    MINI_TYPE::SqlValueType type(MINI_TYPE::MiniInt);
     im.CreateIndex("hi", type);
     const int N = 5;
-    std::array<MINISQL_BASE::SqlValue, N> arr;
+    std::array<MINI_TYPE::SqlValue, N> arr;
     std::vector<int> vec= {3, 7, 2, 0, 5};
     int j = 0;
     for (auto & x : arr)
@@ -25,7 +22,7 @@ int main()
         x.i = vec[j++];
         im.InsertKey("hi", x, j + 1);
     }
-    MINISQL_BASE::SqlValue val;
+    MINI_TYPE::SqlValue val;
     val.i = 3;
     val.type = type;
     for (auto iter = im.Find("hi", val); iter != im.End("hi"); iter++)

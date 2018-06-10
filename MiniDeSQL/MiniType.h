@@ -7,9 +7,14 @@
 #include <vector>
 #include <cstring>
 #include <cstdlib>
+#include <map>
 
 namespace MINI_TYPE
 {
+    const int BlockSize = 4096;
+    const int MaxBlocks = 128;
+    const char Available = 0;
+    
 	enum TypeId
 	{
 		MiniInt,
@@ -40,9 +45,11 @@ namespace MINI_TYPE
 
 	struct SqlValueType
 	{
+        SqlValueType() {}
 		SqlValueType(TypeId id, int c_size=0) : type(id), char_size(c_size) {};
 		TypeId type;
 		std::size_t TypeSize() const;
+        int BPTreeDegree() const;
 		std::size_t char_size;
 	};
 
@@ -54,6 +61,7 @@ namespace MINI_TYPE
         std::string str;
 
 		SqlValueType type;
+        SqlValue() {}
 		SqlValue(SqlValueType t, int i_val) : type(t), i(i_val) {};
 		SqlValue(SqlValueType t, float f_val) : type(t), f(f_val) {};
 		SqlValue(SqlValueType t, const std::string & str_val) : type(t), str(str_val) {};
@@ -68,6 +76,7 @@ namespace MINI_TYPE
 
 	struct Attribute
 	{
+        Attribute(){}
 		Attribute(const std::string & nm, SqlValueType t, bool is_primary=false, bool is_unique=false)
 			: name(nm), type(t), primary(is_primary), unique(is_unique){}
 		std::string name;
@@ -160,6 +169,19 @@ namespace MINI_TYPE
 		{ return *this <= s and *this >= s; }
 	inline bool SqlValue::operator!=(const SqlValue & s) const
 		{ return not (*this == s); }
+	inline int SqlValueType::BPTreeDegree() const
+	{
+		return BlockSize / (TypeSize() + sizeof(int));
+    }
+    inline size_t SqlValueType::TypeSize() const
+    {
+        switch(type)
+        {
+            case MiniInt: return sizeof(int);
+            case MiniFloat: return sizeof(float);
+            case MiniChar: return char_size;
+        }
+    }
 
 }
 

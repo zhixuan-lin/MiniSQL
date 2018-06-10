@@ -1,9 +1,9 @@
 
 #include "IndexManager.hpp"
+#include "MiniType.h"
 
-
-IndexManager::iterator IndexManager::end = IndexManager::iterator(NodeSearchParse<MINISQL_BASE::SqlValue>());
-IndexManager::iterator::iterator(NodeSearchParse<MINISQL_BASE::SqlValue> node) : search_node(node) {}
+IndexManager::iterator IndexManager::end = IndexManager::iterator(NodeSearchParse<MINI_TYPE::SqlValue>());
+IndexManager::iterator::iterator(NodeSearchParse<MINI_TYPE::SqlValue> node) : search_node(node) {}
 
 void IndexManager::iterator::operator++(int i)
 {
@@ -18,7 +18,7 @@ void IndexManager::iterator::operator++(int i)
 	}
 }
 
-std::pair<MINISQL_BASE::SqlValue, int> IndexManager::iterator::operator*()
+std::pair<MINI_TYPE::SqlValue, int> IndexManager::iterator::operator*()
 {
     if (*this == IndexManager::end or search_node.index >= search_node.node->cnt)
 	{
@@ -28,7 +28,7 @@ std::pair<MINISQL_BASE::SqlValue, int> IndexManager::iterator::operator*()
 	return std::make_pair(search_node.node->keys[search_node.index], search_node.node->keyOffset[search_node.index]);
 }
 
-void IndexManager::CreateIndex(const string & index_name, const MINISQL_BASE::SqlValueType & type)
+void IndexManager::CreateIndex(const string & index_name, const MINI_TYPE::SqlValueType & type)
 {
 	auto iter = trees.find(index_name);
 	if (iter != trees.end())
@@ -36,10 +36,10 @@ void IndexManager::CreateIndex(const string & index_name, const MINISQL_BASE::Sq
 		std::cerr << "Index already exists!\n";
 		std::exit(0);
 	}
-	int type_size = type.getSize();
-	int degree = type.getDegree();
+    int type_size = type.TypeSize();
+	int degree = type.BPTreeDegree();
 	
-    auto new_tree = new BPTree<MINISQL_BASE::SqlValue>(index_name, type_size, degree);
+    auto new_tree = new BPTree<MINI_TYPE::SqlValue>(index_name, type_size, degree);
 	trees.insert(std::make_pair(index_name, new_tree));
 
 }
@@ -51,7 +51,7 @@ void IndexManager::DropIndex(const string & index_name)
 	trees.erase(iter);
 }
 
-IndexManager::iterator IndexManager::Find(const string &index_name, const MINISQL_BASE::SqlValue &vals)
+IndexManager::iterator IndexManager::Find(const string &index_name, const MINI_TYPE::SqlValue &vals)
 {
 	auto iter = FindIndex(index_name);
 	
@@ -64,7 +64,7 @@ IndexManager::iterator IndexManager::Begin(const string &index_name)
 {
 	auto iter = FindIndex(index_name);
 
-	return NodeSearchParse<MINISQL_BASE::SqlValue>(iter->second->getHeadNode(), 0);
+	return NodeSearchParse<MINI_TYPE::SqlValue>(iter->second->getHeadNode(), 0);
 }
 
 IndexManager::iterator IndexManager::End(const string &index_name)
@@ -72,20 +72,20 @@ IndexManager::iterator IndexManager::End(const string &index_name)
     return IndexManager::end;
 }
 
-void IndexManager::InsertKey(const string &index_name, const MINISQL_BASE::SqlValue & val, int offset)
+void IndexManager::InsertKey(const string &index_name, const MINI_TYPE::SqlValue & val, int offset)
 {
 	auto iter = FindIndex(index_name);
     iter->second->insert(val, offset);
 }
 
-void IndexManager::RemoveKey(const string &index_name, const MINISQL_BASE::SqlValue & val)
+void IndexManager::RemoveKey(const string &index_name, const MINI_TYPE::SqlValue & val)
 {
 	auto iter = FindIndex(index_name);
 	iter->second->remove(val);
 }
 
 
-IndexManager::Trees<MINISQL_BASE::SqlValue>::iterator IndexManager::FindIndex(const string &index_name)
+IndexManager::Trees<MINI_TYPE::SqlValue>::iterator IndexManager::FindIndex(const string &index_name)
 {
 	auto iter = trees.find(index_name);
 	if (iter == trees.end())
