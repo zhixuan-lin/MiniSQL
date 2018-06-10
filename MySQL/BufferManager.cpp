@@ -31,8 +31,6 @@ Block & Block::Connect(const std::string & filename, int block_id, bool get_cont
         fin.close();
         Write(temp, 0, MINISQL_BASE::BlockSize);
     }
-    else
-    	Flush();
 	return *this;
 }
 
