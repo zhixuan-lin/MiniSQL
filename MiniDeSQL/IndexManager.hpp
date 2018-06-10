@@ -1,10 +1,4 @@
-//
-//  IndexManager.hpp
-//  MiniSQL
-//
-//  Created by lin on 09/06/2018.
-//  Copyright © 2018 lin. All rights reserved.
-//
+
 
 #ifndef IndexManager_hpp
 #define IndexManager_hpp
@@ -32,9 +26,9 @@ public:
 
     static iterator end;
     
-	void CreateIndex(const string & index_name, const MINI_TYPE::SqlValueType & type);
+	bool CreateIndex(const string & index_name, const MINI_TYPE::SqlValueType & type);
 
-	void DropIndex(const string &index_name);
+	bool DropIndex(const string &index_name);
 
 	iterator Find(const string &index_name, const MINI_TYPE::SqlValue &vals);
 

@@ -102,7 +102,7 @@ namespace MINI_TYPE
 		int attribute_idx;
 	};
 	
-    struct Tuple
+    struct Record
     {
         std::vector<SqlValue> values;
     };
@@ -111,7 +111,7 @@ namespace MINI_TYPE
 	{
 		Table (TableInfo i) : info(i) {};
 		TableInfo info;
-		std::vector<Tuple> tuples;
+		std::vector<Record> tuples;
     };
 
 	
@@ -182,7 +182,8 @@ namespace MINI_TYPE
             case MiniChar: return char_size;
         }
     }
-
+    inline std::string TableFileName(const std::string & table_name);
+    inline std::string IndexFileName(const std::string & index_name);
 }
 
 

@@ -28,27 +28,36 @@ std::pair<MINI_TYPE::SqlValue, int> IndexManager::iterator::operator*()
 	return std::make_pair(search_node.node->keys[search_node.index], search_node.node->keyOffset[search_node.index]);
 }
 
-void IndexManager::CreateIndex(const string & index_name, const MINI_TYPE::SqlValueType & type)
+bool IndexManager::CreateIndex(const string & index_name, const MINI_TYPE::SqlValueType & type)
 {
 	auto iter = trees.find(index_name);
 	if (iter != trees.end())
 	{
 		std::cerr << "Index already exists!\n";
-		std::exit(0);
+		return false;
 	}
     int type_size = type.TypeSize();
 	int degree = type.BPTreeDegree();
 	
     auto new_tree = new BPTree<MINI_TYPE::SqlValue>(index_name, type_size, degree);
 	trees.insert(std::make_pair(index_name, new_tree));
-
+	return true;
 }
 
-void IndexManager::DropIndex(const string & index_name)
+bool IndexManager::DropIndex(const string & index_name)
 {
 	auto iter = FindIndex(index_name);
-	delete iter->second;
-	trees.erase(iter);
+	if (iter == trees.end())
+	{
+       
+        std::cerr << "Index does not exists!\n";
+        return false;
+	}
+    delete iter->second;
+    trees.erase(iter);
+    return true;
+    
+	
 }
 
 IndexManager::iterator IndexManager::Find(const string &index_name, const MINI_TYPE::SqlValue &vals)
