@@ -101,10 +101,10 @@ bool RecordManager::BuildIndex(const MINI_TYPE::TableInfo & table, const MINI_TY
 {
     
 }
-bool RecordManager::DropIndex(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute);
-bool RecordManager::InsertRecord(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Record & record);
+bool RecordManager::DropIndex(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute){}
+bool RecordManager::InsertRecord(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Record & record){}
 MINI_TYPE::Table RecordManager::SelectRecord(const MINI_TYPE::TableInfo & table, \
-       const std::vector<MINI_TYPE::Condition> & conditions);
+       const std::vector<MINI_TYPE::Condition> & conditions){}
 MINI_TYPE::Table RecordManager::SelectRecord(const MINI_TYPE::TableInfo & table, \
-       const std::vector<MINI_TYPE::Condition> & conditions, const IndexInfo & index);
-bool RecordManager::DeleteRecord(const MINI_TYPE::TableInfo & table, const vector<Condition> & conditions);
+       const std::vector<MINI_TYPE::Condition> & conditions, const MINI_TYPE::IndexInfo & index){}
+bool RecordManager::DeleteRecord(const MINI_TYPE::TableInfo & table, const vector<MINI_TYPE::Condition> & conditions){}
