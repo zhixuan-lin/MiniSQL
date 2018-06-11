@@ -169,7 +169,41 @@ MINI_TYPE::Table RecordManager::SelectRecord(const MINI_TYPE::TableInfo & table,
 MINI_TYPE::Table RecordManager::SelectRecord(const MINI_TYPE::TableInfo & table, \
        const std::vector<MINI_TYPE::Condition> & conditions, const MINI_TYPE::IndexInfo & index)
 {
-    if (conditions)
+    MINI_TYPE::Table result(table);
+    MINI_TYPE::Condition cond_using_index;
+    using MINI_TYPE::Operator;
+    for (auto & cond : conditions)
+    {
+        if (cond.attribute.name == index.name)
+        {
+            cond_using_index = cond;
+        }
+    }
+    IndexManager::iterator start;
+    IndexManager::iterator finish;
+    auto op = cond_using_index.op;
+    if (op == Operator::LessThan or op == Operator::LessEqual)
+        start = im->Begin(index.name);
+    else
+        start = im->Find(index.name, cond_using_index.value);
+    if (op == Operator::GreaterThan or op == Operator::GreaterEqual)
+        finish = im->End(index.name);
+    else
+        start = im->Find(index.name, cond_using_index.value);
+    IndexManager::iterator iter;
+    for (auto iter = start; iter != finish; iter++)
+    {
+        auto record_fetcher = RecordIterator(table, (*iter).second, bm);
+        MINI_TYPE::Record temp;
+        if (record_fetcher.Read(temp) and MINI_TYPE::Test(cond_using_index, table, temp))
+            result.records.push_back(temp);
+    }
+    // fetch last and test
+    auto record_fetcher = RecordIterator(table, (*iter).second, bm);
+    MINI_TYPE::Record temp;
+    if (record_fetcher.Read(temp) and MINI_TYPE::Test(cond_using_index, table, temp))
+        result.records.push_back(temp);
+    
 }
 
 bool RecordManager::DeleteRecord(const MINI_TYPE::TableInfo & table, const vector<MINI_TYPE::Condition> & conditions){}

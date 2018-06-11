@@ -127,6 +127,7 @@ namespace MINI_TYPE
 
 	struct Condition
 	{
+        Condition(){}
 		Condition(Attribute attr, Operator ope, SqlValue val) : op(ope), value(val), attribute(attr) {}
 		bool Test(SqlValue val) const;
 		Operator op;
@@ -140,6 +141,12 @@ namespace MINI_TYPE
     		if (not cond.Test(record.Extract(table, cond.attribute.name).values[0]))
     			return false;
     	return true;
+    }
+    inline bool Test(Condition & condition, const TableInfo & table, const Record & record)
+    {
+        if (not condition.Test(record.Extract(table, condition.attribute.name).values[0]))
+            return false;
+        return true;
     }
     inline std::ostream &operator<<(std::ostream &out, const SqlValueType sqlValueType){
         out << sqlValueType.type << ' ' << sqlValueType.char_size;
