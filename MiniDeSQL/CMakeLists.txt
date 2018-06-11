@@ -16,4 +16,4 @@ add_executable(MiniSQL
         RecordManager.hpp
         CatalogManager.h
         CatalogManager.cpp
-        TEST_CatalogManager.cpp)
+        API.cpp API.h TEST_API.cpp)

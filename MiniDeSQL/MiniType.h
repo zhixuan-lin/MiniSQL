@@ -53,7 +53,12 @@ namespace MINI_TYPE
 		std::size_t TypeSize() const;
         int BPTreeDegree() const;
 		std::size_t char_size;
-	};
+
+        bool operator==(const SqlValueType &s) const;
+
+        bool operator!=(const SqlValueType &s) const;
+
+    };
 
 	struct SqlValue
 	{
@@ -93,22 +98,32 @@ namespace MINI_TYPE
 	struct TableInfo
 	{
 		std::string name;
+        std::string primaryKey;
 		std::vector<Attribute> attributes;
 		int record_length;
 		int record_count;
 		std::map<std::string, std::string> indices;
         Attribute FetchAttribute(const std::string & attribute_name);
     };
-    
+
+    inline std::string IndexName(const std::string &table_name, const std::string &attribute_name) {
+        return table_name + "_" + attribute_name;
+    }
     struct IndexInfo {
+        IndexInfo() {};
+
+        IndexInfo(std::string table, std::string attribute) :
+                name(IndexName(table, attribute)), table(table), attribute(attribute) {};
 		std::string name;
 		std::string table;
 		std::string attribute;
-		int attribute_idx;
 	};
 	
     struct Record
     {
+        Record() {};
+
+        explicit Record(std::vector<SqlValue> sqlValue) : values(std::move(sqlValue)) {};
         std::vector<SqlValue> values;
         Record Extract(const std::vector<int> indices) const;
         Record Extract(int index) const;
@@ -129,11 +144,16 @@ namespace MINI_TYPE
 	{
         Condition(){}
 		Condition(Attribute attr, Operator ope, SqlValue val) : op(ope), value(val), attribute(attr) {}
-		bool Test(SqlValue val) const;
+
+        bool Test(SqlValue val) const {};
 		Operator op;
 		SqlValue value;
 		Attribute attribute;
     };
+
+    inline bool IsValidString(const size_t charSize) {
+        return charSize >= 1 && charSize <= 255;
+    }
 
     inline bool Test(const std::vector<Condition> & conditions, const TableInfo & table, const Record & record)
     {
@@ -148,6 +168,12 @@ namespace MINI_TYPE
             return false;
         return true;
     }
+
+    inline std::ostream &operator<<(std::ostream &out, const IndexInfo indexInfo) {
+        out << indexInfo.name << ' ' << indexInfo.attribute << ' ' << indexInfo.table;
+        return out;
+    }
+
     inline std::ostream &operator<<(std::ostream &out, const SqlValueType sqlValueType){
         out << sqlValueType.type << ' ' << sqlValueType.char_size;
         return out;
@@ -166,6 +192,7 @@ namespace MINI_TYPE
     inline std::ostream &operator<<(std::ostream &out, const TableInfo tableInfo) {
 
         out << tableInfo.name << ' '
+            << tableInfo.primaryKey << ' '
             << tableInfo.record_count << ' '
             << tableInfo.record_length << ' '
             << tableInfo.attributes.size() << ' '
@@ -179,6 +206,11 @@ namespace MINI_TYPE
 
         out << std::endl;
         return out;
+    }
+
+    inline std::istream &operator>>(std::istream &in, IndexInfo indexInfo) {
+        in >> indexInfo.name >> indexInfo.attribute >> indexInfo.table;
+        return in;
     }
 
     inline std::istream &operator>>(std::istream &in, SqlValueType &sqlValueType) {
@@ -209,7 +241,8 @@ namespace MINI_TYPE
         int attrSize = 0;
         int idxSize = 0;
 
-        in >> tableInfo.name >> tableInfo.record_count >> tableInfo.record_length >> attrSize >> idxSize;
+        in >> tableInfo.name >> tableInfo.primaryKey >> tableInfo.record_count >> tableInfo.record_length >> attrSize
+           >> idxSize;
 
         for (int i = 0; attrSize > i; i++) {
             Attribute attribute;
@@ -307,9 +340,16 @@ namespace MINI_TYPE
             case MiniChar: return char_size;
         }
     }
+
+    inline bool SqlValueType::operator==(const SqlValueType &s) const {
+        return s.type == type and s.char_size == char_size;
+    }
+
+    inline bool SqlValueType::operator!=(const SqlValueType &s) const {
+        return s.type != type or s.char_size != char_size;
+    }
     inline std::string TableFileName(const std::string & table_name) {return table_name;}
     inline std::string IndexFileName(const std::string & index_name) {return index_name;}
-    inline std::string IndexName(const std::string & table_name, const std::string & attribute_name) {return table_name + "_" + attribute_name;}
     inline Record Record::Extract(const std::vector<int> indices) const
     {
     	Record result;

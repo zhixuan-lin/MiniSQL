@@ -99,7 +99,7 @@ bool RecordManager::DeleteTableFile(const MINI_TYPE::TableInfo & table)
 
 bool RecordManager::BuildIndex(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute)
 {
-    std::string index_name = table.name + "_" + attribute.name;
+    std::string index_name = MINI_TYPE::IndexName(table.name, attribute.name);
     im->CreateIndex(index_name, attribute.type);
     RecordIterator iter(table, 0, bm);
     while (true)
@@ -120,8 +120,19 @@ bool RecordManager::BuildIndex(const MINI_TYPE::TableInfo & table, const MINI_TY
 }
 bool RecordManager::DropIndex(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute)
 {
-    std::string index_name = table.name + "_" + attribute.name;
+    std::string index_name = MINI_TYPE::IndexName(table.name, attribute.name);
     im->DropIndex(index_name);
+    return true;
+}
+
+bool RecordManager::DropIndex(const std::string indexName) {
+    im->DropIndex(indexName);
+    return true;
+}
+
+bool RecordManager::DropIndex(const std::vector<std::string> indexNames) {
+    for (auto &indexName : indexNames)
+        im->DropIndex(indexName);
     return true;
 }
 bool RecordManager::InsertRecord(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Record & record)

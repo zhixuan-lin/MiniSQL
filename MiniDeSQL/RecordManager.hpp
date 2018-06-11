@@ -14,6 +14,10 @@ public:
     bool DeleteTableFile(const MINI_TYPE::TableInfo & table);
     bool BuildIndex(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute);
     bool DropIndex(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute);
+
+    bool DropIndex(std::string indexName);
+
+    bool DropIndex(std::vector<std::string> indexNames);
     bool InsertRecord(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Record & record);
     MINI_TYPE::Table SelectRecord(const MINI_TYPE::TableInfo & table, \
             const std::vector<MINI_TYPE::Condition> & conditions);
