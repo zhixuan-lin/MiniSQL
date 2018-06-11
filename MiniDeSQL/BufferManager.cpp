@@ -91,6 +91,12 @@ int BufferManager::PastTheEndBlockID(const std::string & filename)
 
 Block * BufferManager::GetBlock(const std::string & filename, int block_id)
 {
+    std::ifstream fin(filename);
+    if (not fin.is_open())
+    {
+        std::cerr << "File " + filename + " does not exists!\n";
+        exit(0);
+    }
     if (block_id > PastTheEndBlockID(filename))
     {
         std::cerr << "Block id out of bound.\n";

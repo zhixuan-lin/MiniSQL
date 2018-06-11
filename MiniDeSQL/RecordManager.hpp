@@ -31,7 +31,8 @@ private:
         bool Read(MINI_TYPE::Record & record);
         void Write(const MINI_TYPE::Record & r) const;
         void Delete();
-        bool Next();
+        bool Next(bool expand = false);
+        int CurrentIndex() {return record_index;}
     private:
         MINI_TYPE::TableInfo table;
         BufferManager * bm;

@@ -97,6 +97,7 @@ namespace MINI_TYPE
 		int record_length;
 		int record_count;
 		std::map<std::string, std::string> indices;
+        Attribute FetchAttribute(const std::string & attribute_name);
     };
     
     struct IndexInfo {
@@ -109,11 +110,17 @@ namespace MINI_TYPE
     struct Record
     {
         std::vector<SqlValue> values;
+        Record Extract(const std::vector<int> indices) const;
+        Record Extract(int index) const;
+        Record Extract(const TableInfo & table, const std::vector<std::string> & attributes) const;
+        Record Extract(const TableInfo & table, const std::string & attribute) const;
     };
     
 	struct Table
 	{
-		Table (TableInfo i) : info(i) {};
+		Table (TableInfo i) : info(i) {}
+		Table (TableInfo i, std::vector<Record> r) : info(i), records(r) {}
+		
 		TableInfo info;
 		std::vector<Record> records;
     };
@@ -122,22 +129,31 @@ namespace MINI_TYPE
 	{
 		Condition(Attribute attr, Operator ope, SqlValue val) : op(ope), value(val), attribute(attr) {}
 		bool Test(SqlValue val) const;
-	private:
 		Operator op;
 		SqlValue value;
 		Attribute attribute;
     };
 
+    inline bool Test(const std::vector<Condition> & conditions, const TableInfo & table, const Record & record)
+    {
+    	for (const auto & cond : conditions)
+    		if (not cond.Test(record.Extract(table, cond.attribute.name).values[0]))
+    			return false;
+    	return true;
+    }
     inline std::ostream &operator<<(std::ostream &out, const SqlValueType sqlValueType){
         out << sqlValueType.type << ' ' << sqlValueType.char_size;
+        return out;
     }
 
     inline std::ostream &operator<<(std::ostream &out, const Attribute attribute){
         out << attribute.name << ' ' << attribute.type << ' ' << attribute.primary << ' ' << attribute.unique;
+        return out;
     }
 
     inline std::ostream &operator<<(std::ostream &out, const std::pair<std::string, std::string> index){
         out << index.first << ' ' << index.second;
+        return out;
     }
 
     inline std::ostream &operator<<(std::ostream &out, const TableInfo tableInfo) {
@@ -155,6 +171,7 @@ namespace MINI_TYPE
             out << index << ' ';
 
         out << std::endl;
+        return out;
     }
 
     inline std::istream &operator>>(std::istream &in, SqlValueType &sqlValueType) {
@@ -168,14 +185,17 @@ namespace MINI_TYPE
         }
 
         in >> sqlValueType.char_size;
+        return in;
     }
 
     inline std::istream &operator>>(std::istream &in, Attribute &attribute){
         in >> attribute.name >> attribute.type >> attribute.primary >> attribute.unique;
+        return in;
     }
 
     inline std::istream &operator>>(std::istream &in, std::pair<std::string, std::string> &index){
         in >> index.first >> index.second;
+        return in;
     }
 
     inline std::istream &operator>>(std::istream &in, TableInfo &tableInfo) {
@@ -195,6 +215,7 @@ namespace MINI_TYPE
             in >> index;
             tableInfo.indices.insert(index);
         }
+        return in;
     }
 
     inline void SqlValue::ReadFromMemory(const char * source, int byte_offset)
@@ -281,6 +302,60 @@ namespace MINI_TYPE
     }
     inline std::string TableFileName(const std::string & table_name) {return table_name;}
     inline std::string IndexFileName(const std::string & index_name) {return index_name;}
+    inline std::string IndexName(const std::string & table_name, const std::string & attribute_name) {return table_name + "_" + attribute_name;}
+    inline Record Record::Extract(const std::vector<int> indices) const
+    {
+    	Record result;
+    	for (auto idx : indices)
+    		result.values.push_back(values[idx]);
+    	return result;
+    }
+    inline Record Record::Extract(int i) const
+    {
+    	Record result;
+    	result.values.push_back(values[i]);
+    	return result;
+    }
+    
+    inline Attribute TableInfo::FetchAttribute(const std::string & attribute_name)
+    {
+    	for (const auto & attr : attributes)
+    	{
+    		if (attr.name == attribute_name)
+    			return attr;
+    	}
+    	std::cerr << "Attribute " + attribute_name + " does not exists!\n";
+    	std::exit(0);
+    }
+    inline Record Record::Extract(const TableInfo & table, const std::string & attribute) const
+    {
+    	return Extract(table, std::vector<std::string>(1, attribute));
+    }
+    inline Record Record::Extract(const TableInfo & table, const std::vector<std::string> & attributes) const
+    {
+    	std::vector<int> indices;
+    	for (const auto & attr : attributes)
+    	{
+    		bool found = false;
+    		for (int i = 0; i < table.attributes.size(); i++)
+	    	{
+				
+				if (table.attributes[i].name == attr)
+				{
+					indices.push_back(i);
+					found = true;
+				}
+	    	}
+	    	if (not found)
+	    	{
+	    		std::cerr << "Attribute " + attr + " does not exists!\n";
+    			std::exit(0);
+	    	}
+    	}
+
+    	return Extract(indices);
+    }
+
 }
 
 

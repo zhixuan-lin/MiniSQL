@@ -13,7 +13,7 @@ RecordManager::RecordIterator::RecordIterator(const MINI_TYPE::TableInfo & table
     in_block_record_index = record_index * record_length - MINI_TYPE::BlockSize * block_id;
     past_the_end_block_id = bm->PastTheEndBlockID(table.name);
     records_per_block = MINI_TYPE::BlockSize / record_length;
-    block = bm->GetBlock(table.name, block_id);
+    block = bm->GetBlock(MINI_TYPE::TableFileName(table.name), block_id);
 }
 
 RecordManager::RecordIterator::~RecordIterator()
@@ -51,7 +51,7 @@ void RecordManager::RecordIterator::Delete()
     (*block)[in_block_record_index * record_length] = MINI_TYPE::Empty;
 }
 
-bool RecordManager::RecordIterator::Next()
+bool RecordManager::RecordIterator::Next(bool expand)
 {
     record_index++;
     in_block_record_index++;
@@ -61,7 +61,7 @@ bool RecordManager::RecordIterator::Next()
         in_block_record_index = 0;
         block = bm->GetBlock(table.name, block_id);
     }
-    if (block_id >= past_the_end_block_id)
+    if (block_id >= past_the_end_block_id and not expand)
         return false;
     else
         return true;
@@ -99,12 +99,77 @@ bool RecordManager::DeleteTableFile(const MINI_TYPE::TableInfo & table)
 
 bool RecordManager::BuildIndex(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute)
 {
-    
+    std::string index_name = table.name + "_" + attribute.name;
+    im->CreateIndex(index_name, attribute.type);
+    RecordIterator iter(table, 0, bm);
+    while (true)
+    {
+        MINI_TYPE::Record record;
+        iter.Read(record);
+        MINI_TYPE::SqlValue key;
+        for (int i = 0; i < table.attributes.size(); i++)
+        {
+            if (table.attributes[i].name == attribute.name)
+            {
+                key = record.values[i];
+                break;
+            }
+        }
+        im->InsertKey(index_name, key, iter.CurrentIndex());
+    }
 }
-bool RecordManager::DropIndex(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute){}
-bool RecordManager::InsertRecord(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Record & record){}
+bool RecordManager::DropIndex(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute)
+{
+    std::string index_name = table.name + "_" + attribute.name;
+    im->DropIndex(index_name);
+    return true;
+}
+bool RecordManager::InsertRecord(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Record & record)
+{
+    int past_the_end_block_id = bm->PastTheEndBlockID(MINI_TYPE::TableFileName(table.name));
+    int start_record_index;
+    int record_length = table.record_length + 1;
+    int records_per_block = MINI_TYPE::BlockSize / record_length;
+    if (past_the_end_block_id == 0)
+        start_record_index = 0;
+    else
+        start_record_index = records_per_block * (past_the_end_block_id - 1);
+    RecordIterator iter(table, start_record_index, bm);
+    while (true)
+    {
+        MINI_TYPE::Record temp;
+        if (not iter.Read(temp))
+        {
+            iter.Write(record);
+            break;
+        }
+        iter.Next(true);
+    }
+    return true;
+}
+
 MINI_TYPE::Table RecordManager::SelectRecord(const MINI_TYPE::TableInfo & table, \
-       const std::vector<MINI_TYPE::Condition> & conditions){}
+       const std::vector<MINI_TYPE::Condition> & conditions)
+{
+    MINI_TYPE::Table result(table);
+    RecordIterator iter(table, 0, bm);
+    while (true)
+    {
+        MINI_TYPE::Record temp;
+        if (iter.Read(temp))
+        {
+            if (MINI_TYPE::Test(conditions, table, temp))
+                result.records.push_back(temp);   
+        }
+        if (not iter.Next())
+                break;
+    }
+    return result;
+}
 MINI_TYPE::Table RecordManager::SelectRecord(const MINI_TYPE::TableInfo & table, \
-       const std::vector<MINI_TYPE::Condition> & conditions, const MINI_TYPE::IndexInfo & index){}
+       const std::vector<MINI_TYPE::Condition> & conditions, const MINI_TYPE::IndexInfo & index)
+{
+    if (conditions)
+}
+
 bool RecordManager::DeleteRecord(const MINI_TYPE::TableInfo & table, const vector<MINI_TYPE::Condition> & conditions){}

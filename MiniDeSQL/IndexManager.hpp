@@ -14,7 +14,6 @@ public:
 	class iterator
 	{
 	public:
-        
 		iterator(NodeSearchParse<MINI_TYPE::SqlValue>);
 		void operator++(int);
         std::pair<MINI_TYPE::SqlValue, int> operator*();
