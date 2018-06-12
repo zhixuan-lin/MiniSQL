@@ -50,7 +50,9 @@ public:
 
     MINI_TYPE::IndexInfo &GetPrimaryIndex(MINI_TYPE::TableInfo tableInfo);
 
-    std::vector<std::string> &GetAttrNames(std::string tableName);
+    std::vector<std::string> GetAttrNames(std::string tableName);
+
+    inline std::vector<MINI_TYPE::IndexInfo> &GetIndices() { return indexInfos; };
 
 private:
     std::vector<MINI_TYPE::TableInfo> tableInfos;

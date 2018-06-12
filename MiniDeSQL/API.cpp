@@ -7,6 +7,10 @@ API::API() {
     auto bm = new BufferManager;
     rm = new RecordManager(bm, im);
     cm = new CatalogManager;
+
+    // rebuild indices
+    for (auto &index : cm->GetIndices())
+        rm->BuildIndex(cm->GetTableByName(index.table), cm->GetAttrByName(index.table, index.attribute));
 }
 
 API::~API() {
