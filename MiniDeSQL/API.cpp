@@ -9,7 +9,7 @@ API::API() {
     cm = new CatalogManager;
 }
 
-bool API::CreateTable(const MINI_TYPE::TableInfo tableInfo) {
+bool API::CreateTable(MINI_TYPE::TableInfo tableInfo) {
 
     // 1) check if the table exists
 

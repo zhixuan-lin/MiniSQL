@@ -101,21 +101,20 @@ bool RecordManager::BuildIndex(const MINI_TYPE::TableInfo & table, const MINI_TY
 {
     std::string index_name = MINI_TYPE::IndexName(table.name, attribute.name);
     im->CreateIndex(index_name, attribute.type);
-    RecordIterator iter(table, 0, bm);
-    while (true)
-    {
-        MINI_TYPE::Record record;
-        iter.Read(record);
-        MINI_TYPE::SqlValue key;
-        for (int i = 0; i < table.attributes.size(); i++)
-        {
-            if (table.attributes[i].name == attribute.name)
-            {
-                key = record.values[i];
-                break;
+    if(table.record_count > 0) {
+        RecordIterator iter(table, 0, bm);
+        while (true) {
+            MINI_TYPE::Record record;
+            iter.Read(record);
+            MINI_TYPE::SqlValue key;
+            for (int i = 0; i < table.attributes.size(); i++) {
+                if (table.attributes[i].name == attribute.name) {
+                    key = record.values[i];
+                    break;
+                }
             }
+            im->InsertKey(index_name, key, iter.CurrentIndex());
         }
-        im->InsertKey(index_name, key, iter.CurrentIndex());
     }
 }
 bool RecordManager::DropIndex(const MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute)

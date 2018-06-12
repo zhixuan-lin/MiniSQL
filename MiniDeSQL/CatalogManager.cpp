@@ -56,7 +56,11 @@ bool CatalogManager::TableExists(std::string tableName) const{
     return false;
 }
 
-bool CatalogManager::CreateTable(MINI_TYPE::TableInfo tableInfo){
+bool CatalogManager::CreateTable(MINI_TYPE::TableInfo& tableInfo){
+    tableInfo.record_count = 0;
+    tableInfo.record_length = 0;
+    for (auto &attr : tableInfo.attributes)
+        tableInfo.record_length += attr.type.TypeSize();
     tableInfos.push_back(tableInfo);
     return true;
 }

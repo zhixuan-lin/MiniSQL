@@ -18,7 +18,7 @@ public:
 
     bool TableExists(std::string tableName) const;
 
-    bool CreateTable(MINI_TYPE::TableInfo tableInfo);
+    bool CreateTable(MINI_TYPE::TableInfo& tableInfo);
 
     bool DeleteTable(std::string tableName);
 
