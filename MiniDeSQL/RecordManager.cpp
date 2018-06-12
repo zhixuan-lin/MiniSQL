@@ -184,7 +184,7 @@ MINI_TYPE::Table RecordManager::SelectRecord(const MINI_TYPE::TableInfo & table,
     using MINI_TYPE::Operator;
     for (auto & cond : conditions)
     {
-        if (cond.attribute.name == index.name)
+        if (cond.attributeName == index.name)
         {
             cond_using_index = cond;
         }

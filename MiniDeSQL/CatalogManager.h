@@ -24,6 +24,8 @@ public:
 
     bool IndexExists(std::string indexName) const;
 
+    bool IndexFindAndNormalizeAlias(std::string& indexAlias);
+
     bool CreateIndex(MINI_TYPE::IndexInfo indexInfo);
 
     bool CreateIndex(std::string tableName, std::string attrName);
@@ -33,6 +35,8 @@ public:
     std::vector<std::string> GetIndexConcerned(std::string tableName);
 
     void AttachIndexToTable(MINI_TYPE::IndexInfo indexInfo);
+
+    void AttachIndexToTable(MINI_TYPE::TableInfo &tableInfo, std::string attrName);
 
     void MakeAttrUnique(MINI_TYPE::TableInfo tableInfo, std::string attrName);
 

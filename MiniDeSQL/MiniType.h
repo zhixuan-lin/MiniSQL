@@ -113,8 +113,11 @@ namespace MINI_TYPE
         IndexInfo() {};
 
         IndexInfo(std::string table, std::string attribute) :
-                name(IndexName(table, attribute)), table(table), attribute(attribute) {};
+                name(IndexName(table, attribute)), table(table), attribute(attribute), alias("NULLALIAS") {};
+        IndexInfo(std::string table, std::string attribute, std::string alias) :
+                name(IndexName(table, attribute)), table(table), attribute(attribute), alias(std::move(alias)) {};
 		std::string name;
+		std::string alias;
 		std::string table;
 		std::string attribute;
 	};
@@ -133,6 +136,7 @@ namespace MINI_TYPE
     
 	struct Table
 	{
+	    Table (){}
 		Table (TableInfo i) : info(i) {}
 		Table (TableInfo i, std::vector<Record> r) : info(i), records(r) {}
 		
@@ -143,12 +147,12 @@ namespace MINI_TYPE
 	struct Condition
 	{
         Condition(){}
-		Condition(Attribute attr, Operator ope, SqlValue val) : op(ope), value(val), attribute(attr) {}
+		Condition(std::string attr, Operator ope, SqlValue val) : op(ope), value(val), attributeName(attr) {}
 
         bool Test(SqlValue val) const {};
 		Operator op;
 		SqlValue value;
-		Attribute attribute;
+		std::string attributeName;
     };
 
     inline bool IsValidString(const size_t charSize) {
@@ -158,19 +162,36 @@ namespace MINI_TYPE
     inline bool Test(const std::vector<Condition> & conditions, const TableInfo & table, const Record & record)
     {
     	for (const auto & cond : conditions)
-    		if (not cond.Test(record.Extract(table, cond.attribute.name).values[0]))
+    		if (not cond.Test(record.Extract(table, cond.attributeName).values[0]))
     			return false;
     	return true;
     }
     inline bool Test(Condition & condition, const TableInfo & table, const Record & record)
     {
-        if (not condition.Test(record.Extract(table, condition.attribute.name).values[0]))
+        if (not condition.Test(record.Extract(table, condition.attributeName).values[0]))
             return false;
         return true;
     }
 
+    inline std::ostream &operator<<(std::ostream &out, const Table table) {
+
+        for (auto& attr : table.info.attributes)
+            out << attr.name << '\t';
+
+        out << std::endl;
+
+        for (auto& record : table.records) {
+            for (auto &value : record.values) {
+                out << value.ToStr() << '\t';
+            }
+            out << std::endl;
+        }
+
+        return out;
+    }
+
     inline std::ostream &operator<<(std::ostream &out, const IndexInfo indexInfo) {
-        out << indexInfo.name << ' ' << indexInfo.attribute << ' ' << indexInfo.table;
+        out << indexInfo.name << ' ' << indexInfo.attribute << ' ' << indexInfo.table << ' ' << indexInfo.alias << std::endl;
         return out;
     }
 
@@ -209,7 +230,7 @@ namespace MINI_TYPE
     }
 
     inline std::istream &operator>>(std::istream &in, IndexInfo indexInfo) {
-        in >> indexInfo.name >> indexInfo.attribute >> indexInfo.table;
+        in >> indexInfo.name >> indexInfo.attribute >> indexInfo.table >> indexInfo.alias;
         return in;
     }
 
@@ -342,11 +363,11 @@ namespace MINI_TYPE
     }
 
     inline bool SqlValueType::operator==(const SqlValueType &s) const {
-        return s.type == type and s.char_size == char_size;
+        return s.type == type;
     }
 
     inline bool SqlValueType::operator!=(const SqlValueType &s) const {
-        return s.type != type or s.char_size != char_size;
+        return s.type != type;
     }
     inline std::string TableFileName(const std::string & table_name) {return table_name;}
     inline std::string IndexFileName(const std::string & index_name) {return index_name;}
@@ -371,7 +392,7 @@ namespace MINI_TYPE
     		if (attr.name == attribute_name)
     			return attr;
     	}
-    	std::cerr << "Attribute " + attribute_name + " does not exists!\n";
+    	std::cerr << "Attribute " + attribute_name + " does not exist!\n";
     	std::exit(0);
     }
     inline Record Record::Extract(const TableInfo & table, const std::string & attribute) const

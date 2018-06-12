@@ -61,6 +61,7 @@ bool CatalogManager::CreateTable(MINI_TYPE::TableInfo& tableInfo){
     tableInfo.record_length = 0;
     for (auto &attr : tableInfo.attributes)
         tableInfo.record_length += attr.type.TypeSize();
+    AttachIndexToTable(tableInfo, tableInfo.primaryKey);
     tableInfos.push_back(tableInfo);
     return true;
 }
@@ -80,7 +81,7 @@ bool CatalogManager::DeleteTable(std::string tableName) {
 
 bool CatalogManager::IndexExists(std::string indexName) const {
     for (auto &index : indexInfos)
-        if (indexName == index.name)
+        if (indexName == index.name || indexName == index.alias)
             return true;
     return false;
 }
@@ -136,6 +137,10 @@ void CatalogManager::AttachIndexToTable(MINI_TYPE::IndexInfo indexInfo) {
     tableInfo.indices[indexInfo.attribute] = indexInfo.name;
 }
 
+void CatalogManager::AttachIndexToTable(MINI_TYPE::TableInfo &tableInfo, std::string attrName) {
+    tableInfo.indices[attrName] = MINI_TYPE::IndexName(tableInfo.name, attrName);
+}
+
 std::vector<std::string> CatalogManager::GetIndexConcerned(std::string tableName) {
     std::vector<std::string> indexNames;
     auto &tableInfo = GetTableByName(std::move(tableName));
@@ -152,4 +157,13 @@ MINI_TYPE::IndexInfo &CatalogManager::GetIndexByName(std::string indexName) {
 
 MINI_TYPE::IndexInfo &CatalogManager::GetPrimaryIndex(MINI_TYPE::TableInfo tableInfo) {
     return GetIndexByName(MINI_TYPE::IndexName(tableInfo.name, tableInfo.primaryKey));
+}
+
+bool CatalogManager::IndexFindAndNormalizeAlias(std::string& indexAlias) {
+    for (auto &index : indexInfos)
+        if (indexAlias == index.name || indexAlias == index.alias) {
+            indexAlias = index.name;
+            return true;
+        }
+    return false;
 }

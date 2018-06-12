@@ -9,6 +9,15 @@ API::API() {
     cm = new CatalogManager;
 }
 
+API::~API() {
+    delete rm;
+    delete cm;
+}
+
+bool API::Exit() {
+    delete api;
+}
+
 bool API::CreateTable(MINI_TYPE::TableInfo tableInfo) {
 
     // 1) check if the table exists
@@ -38,6 +47,7 @@ bool API::CreateTable(MINI_TYPE::TableInfo tableInfo) {
     api->rm->CreateTableFile(tableInfo);
     api->cm->CreateIndex(tableInfo.name, tableInfo.primaryKey);
     api->rm->BuildIndex(tableInfo, api->cm->GetAttrByName(tableInfo, tableInfo.primaryKey));
+    api->cm->SaveCatalogToFile();
 
     return true;
 }
@@ -72,6 +82,7 @@ bool API::CreateIndex(const MINI_TYPE::IndexInfo indexInfo) {
 
     auto &tableInfo = api->cm->GetTableByName(indexInfo.table);
     api->rm->BuildIndex(tableInfo, api->cm->GetAttrByName(tableInfo, indexInfo.attribute));
+    api->cm->SaveCatalogToFile();
 
     return true;
 }
@@ -88,15 +99,16 @@ bool API::DropTable(const std::string tableName) {
     // 2) start deleting
     api->rm->DropIndex(api->cm->GetIndexConcerned(tableName));
     api->cm->DeleteTable(tableName); // includes DeleteIndex
+    api->cm->SaveCatalogToFile();
 
     return true;
 }
 
-bool API::DropIndex(const std::string indexName) {
+bool API::DropIndex(std::string indexName) {
 
     // 1) check if the index exists
 
-    if (!api->cm->IndexExists(indexName)) {
+    if (!api->cm->IndexFindAndNormalizeAlias(indexName)) {
         std::cerr << "Index " << indexName << " does not exist." << std::endl;
         return false;
     }
@@ -105,6 +117,7 @@ bool API::DropIndex(const std::string indexName) {
 
     api->rm->DropIndex(indexName);
     api->cm->DeleteIndex(indexName);
+    api->cm->SaveCatalogToFile();
 
     return true;
 }
@@ -134,6 +147,7 @@ bool API::Select(const std::string tableName, const std::vector<MINI_TYPE::Condi
     }
 
     // 2) start selecting
+    MINI_TYPE::Table tableRes;
 
     bool existNeq = false;
     for (auto &cond : condList)
@@ -142,9 +156,11 @@ bool API::Select(const std::string tableName, const std::vector<MINI_TYPE::Condi
 
     auto &tableInfo = api->cm->GetTableByName(tableName);
     if (existNeq)
-        api->rm->SelectRecord(tableInfo, condList);
+        tableRes = api->rm->SelectRecord(tableInfo, condList);
     else
-        api->rm->SelectRecord(tableInfo, condList, api->cm->GetPrimaryIndex(tableInfo));
+        tableRes = api->rm->SelectRecord(tableInfo, condList, api->cm->GetPrimaryIndex(tableInfo));
+
+    std::cout << tableRes << std::endl;
 
     return true;
 }

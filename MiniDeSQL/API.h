@@ -26,8 +26,11 @@ public:
 
     static bool Insert(std::string tableName, std::vector<MINI_TYPE::SqlValue> valueList);
 
+    static bool Exit();
+
 private:
     API();
+    ~API();
 
     static API *api;
 
