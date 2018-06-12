@@ -82,7 +82,35 @@ void SelectTest(){
 //    select * from student where sno = ‘88888888’;
 //    select * from student where sage > 20 and sgender = ‘F’;
 
+    std::vector<Condition> emptyCond;
 
+    API::Select("student", emptyCond);
+
+    Condition c0;
+    SqlValueType t0(MiniChar, 8);
+    c0.value.type = t0;
+    c0.value.str = "88888888";
+    c0.op = Equal;
+    c0.attributeName = "sno";
+    std::vector<Condition> condList0 = {c0};
+
+    API::Select("student", condList0);
+
+    Condition c1;
+    Condition c2;
+    SqlValueType t1(MiniInt);
+    SqlValueType t2(MiniChar, 1);
+    c1.value.type = t1;
+    c1.value.i = 20;
+    c1.op = GreaterThan;
+    c1.attributeName = "sage";
+    c2.value.type = t2;
+    c2.value.str = "F";
+    c2.op = Equal;
+    c2.attributeName = "sgender";
+    std::vector<Condition> condList1 = {c1, c2};
+
+    API::Select("student", condList1);
 }
 
 void InsertTest(){

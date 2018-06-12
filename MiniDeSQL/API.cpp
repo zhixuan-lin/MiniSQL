@@ -138,7 +138,7 @@ bool API::Delete(const std::string tableName, const std::vector<MINI_TYPE::Condi
 }
 
 bool API::Select(const std::string tableName, const std::vector<MINI_TYPE::Condition> condList,
-                 const std::vector<MINI_TYPE::Attribute> attrList) {
+                 const std::vector<std::string> attrList) {
     // 1) check if the table exists
 
     if (!api->cm->TableExists(tableName)) {
@@ -160,9 +160,13 @@ bool API::Select(const std::string tableName, const std::vector<MINI_TYPE::Condi
     else
         tableRes = api->rm->SelectRecord(tableInfo, condList, api->cm->GetPrimaryIndex(tableInfo));
 
-    std::cout << tableRes << std::endl;
+    tableRes.DisplayAttr(attrList);
 
     return true;
+}
+
+bool API::Select(std::string tableName, std::vector<MINI_TYPE::Condition> condList) {
+    Select(tableName, condList, api->cm->GetAttrNames(tableName));
 }
 
 bool API::Insert(std::string tableName, std::vector<MINI_TYPE::SqlValue> valueList) {

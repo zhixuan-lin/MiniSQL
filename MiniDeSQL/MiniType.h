@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstring>
 #include <cstdlib>
+#include <algorithm>
 #include <map>
 
 namespace MINI_TYPE
@@ -142,6 +143,8 @@ namespace MINI_TYPE
 		
 		TableInfo info;
 		std::vector<Record> records;
+
+		void DisplayAttr(std::vector<std::string> attrList);
     };
 
 	struct Condition
@@ -172,6 +175,25 @@ namespace MINI_TYPE
             return false;
         return true;
     }
+
+	inline void Table::DisplayAttr(std::vector<std::string> attrList) {
+		std::vector<int> attrIdx;
+
+		for (int i = 0; info.attributes.size() > i; i++)
+			if (std::find(attrList.begin(), attrList.end(), info.attributes[i].name) != attrList.end()) {
+				attrIdx.push_back(i);
+				std::cout << info.attributes[i].name << '\t';
+			}
+
+		std::cout << std::endl;
+
+		for (auto &record : records) {
+			for (auto &idx : attrIdx) {
+				std::cout << record.values[idx].ToStr() << '\t';
+			}
+			std::cout << std::endl;
+		}
+	}
 
     inline std::ostream &operator<<(std::ostream &out, const Table table) {
 

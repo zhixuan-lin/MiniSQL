@@ -167,3 +167,11 @@ bool CatalogManager::IndexFindAndNormalizeAlias(std::string& indexAlias) {
         }
     return false;
 }
+
+std::vector<std::string> &CatalogManager::GetAttrNames(std::string tableName) {
+    std::vector<std::string> res;
+    auto &tableInfo = GetTableByName(std::move(tableName));
+    for (auto &attr : tableInfo.attributes)
+        res.push_back(attr.name);
+    return res;
+}

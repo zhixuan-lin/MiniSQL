@@ -22,7 +22,10 @@ public:
 
     static bool Select(std::string tableName,
                        std::vector<MINI_TYPE::Condition> condList,
-                       std::vector<MINI_TYPE::Attribute> attrList);
+                       std::vector<std::string> attrList);
+
+    static bool Select(std::string tableName,
+                       std::vector<MINI_TYPE::Condition> condList);
 
     static bool Insert(std::string tableName, std::vector<MINI_TYPE::SqlValue> valueList);
 
