@@ -199,7 +199,7 @@ bool API::Select(const std::string tableName, const std::vector<MINI_TYPE::Condi
     auto &tableInfo = api->cm->GetTableByName(tableName);
     if (existNeq)
         tableRes = api->rm->SelectRecord(tableInfo, condList);
-    else
+    else // TODO: to be modified
         tableRes = api->rm->SelectRecord(tableInfo, condList, api->cm->GetPrimaryIndex(tableInfo));
 
     tableRes.DisplayAttr(attrList);

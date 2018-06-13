@@ -20,13 +20,13 @@ void DeleteTest();
 
 int main() {
 
-    CreateTableTest();
-    DropTableTest();
-    CreateIndexTest();
-    DropIndexTest();
+//    CreateTableTest();
+//    DropTableTest();
+//    CreateIndexTest();
+//    DropIndexTest();
     SelectTest();
-    InsertTest();
-    DeleteTest();
+//    InsertTest();
+//    DeleteTest();
 
     return 0;
 }
@@ -66,10 +66,10 @@ void CreateTableTest() {
     assert(command.tableInfo.attributes[2].type.type == MiniInt);
     assert(!command.tableInfo.attributes[2].unique);
 
-    assert(command.tableInfo.attributes[1].name == "sgender");
-    assert(command.tableInfo.attributes[1].type.type == MiniChar);
-    assert(command.tableInfo.attributes[1].type.char_size == 1);
-    assert(!command.tableInfo.attributes[1].unique);
+    assert(command.tableInfo.attributes[3].name == "sgender");
+    assert(command.tableInfo.attributes[3].type.type == MiniChar);
+    assert(command.tableInfo.attributes[3].type.char_size == 1);
+    assert(!command.tableInfo.attributes[3].unique);
 }
 
 void DropTableTest() {

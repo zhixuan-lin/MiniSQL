@@ -83,8 +83,9 @@ void SelectTest(){
 //    select * from student where sage > 20 and sgender = ‘F’;
 
     std::vector<Condition> emptyCond;
+    std::vector<std::string> emptyAttr;
 
-    API::Select("student", emptyCond);
+    API::Select("student", emptyCond, emptyAttr);
 
     Condition c0;
     SqlValueType t0(MiniChar, 8);
@@ -94,7 +95,7 @@ void SelectTest(){
     c0.attributeName = "sno";
     std::vector<Condition> condList0 = {c0};
 
-    API::Select("student", condList0);
+    API::Select("student", condList0, emptyAttr);
 
     Condition c1;
     Condition c2;
@@ -110,7 +111,7 @@ void SelectTest(){
     c2.attributeName = "sgender";
     std::vector<Condition> condList1 = {c1, c2};
 
-    API::Select("student", condList1);
+    API::Select("student", condList1, emptyAttr);
 }
 
 void InsertTest(){

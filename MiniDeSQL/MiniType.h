@@ -86,7 +86,7 @@ namespace MINI_TYPE
 
 	struct Attribute
 	{
-        Attribute(){}
+        Attribute() : unique(false), primary(false) {}
 		Attribute(std::string nm, SqlValueType t, bool is_primary=false, bool is_unique=false)
 			: name(std::move(nm)), type(t), primary(is_primary), unique(is_unique){}
 		std::string name;
@@ -167,6 +167,18 @@ namespace MINI_TYPE
         std::vector<Condition> condArray;
         std::vector<SqlValue> valueArray;
         std::vector<std::string> attrList;
+    };
+
+    class SyntaxError : public std::exception {
+    public:
+        explicit SyntaxError(std::string errMessage) : errMessage(std::move(errMessage)) {};
+
+        const char *what() const noexcept override {
+            return errMessage.c_str();
+        }
+
+    private:
+        std::string errMessage;
     };
 
     inline bool IsValidString(const size_t charSize) {
@@ -404,6 +416,18 @@ namespace MINI_TYPE
     }
     inline std::string TableFileName(const std::string & table_name) {return table_name;}
     inline std::string IndexFileName(const std::string & index_name) {return index_name;}
+
+    inline Operator GetOpFromString(const std::string opStr) {
+        static std::map<std::string, Operator> toOp = {
+                {"=",  Equal},
+                {"!=", NotEqual},
+                {">",  GreaterThan},
+                {">=", GreaterEqual},
+                {"<",  LessThan},
+                {"<=", LessEqual}
+        };
+        return toOp[opStr];
+    };
     inline Record Record::Extract(const std::vector<int> indices) const
     {
     	Record result;
