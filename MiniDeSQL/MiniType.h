@@ -25,7 +25,7 @@ namespace MINI_TYPE
     	MiniChar
 	};
 
-	enum Command {
+    enum CommandType {
 	    CreateTableCmd,    // arg: TableInfo
 	    DropTableCmd,      // arg: TableName
 	    CreateIndexCmd,    // arg: IndexInfo
@@ -156,6 +156,17 @@ namespace MINI_TYPE
 		Operator op;
 		SqlValue value;
 		std::string attributeName;
+    };
+
+    struct SqlCommand {
+        CommandType commandType;
+        TableInfo tableInfo;
+        IndexInfo indexInfo;
+        std::string tableName;
+        std::string indexName;
+        std::vector<Condition> condArray;
+        std::vector<SqlValue> valueArray;
+        std::vector<std::string> attrList;
     };
 
     inline bool IsValidString(const size_t charSize) {

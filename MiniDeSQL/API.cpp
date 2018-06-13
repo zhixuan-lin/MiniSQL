@@ -22,6 +22,40 @@ bool API::Exit() {
     delete api;
 }
 
+bool API::Execute(MINI_TYPE::SqlCommand sqlCommand) {
+    using namespace MINI_TYPE;
+    switch (sqlCommand.commandType) {
+        case CreateTableCmd:
+            CreateTable(sqlCommand.tableInfo);
+            break;
+        case DropTableCmd:
+            DropTable(sqlCommand.tableName);
+            break;
+        case CreateIndexCmd:
+            CreateIndex(sqlCommand.indexInfo);
+            break;
+        case DropIndexCmd:
+            DropIndex(sqlCommand.indexName);
+            break;
+        case SelectCmd:
+            Select(sqlCommand.tableName,
+                   sqlCommand.condArray,
+                   sqlCommand.attrList);
+            break;
+        case InsertCmd:
+            Insert(sqlCommand.tableName,
+                   sqlCommand.valueArray);
+            break;
+        case DeleteCmd:
+            Delete(sqlCommand.tableName,
+                   sqlCommand.condArray);
+            break;
+        default:
+            // DO NOTHING
+            break;
+    }
+}
+
 bool API::CreateTable(MINI_TYPE::TableInfo tableInfo) {
 
     // 1) check if the table exists
@@ -142,7 +176,11 @@ bool API::Delete(const std::string tableName, const std::vector<MINI_TYPE::Condi
 }
 
 bool API::Select(const std::string tableName, const std::vector<MINI_TYPE::Condition> condList,
-                 const std::vector<std::string> attrList) {
+                 std::vector<std::string> attrList) {
+
+    if (attrList.empty())
+        attrList = api->cm->GetAttrNames(tableName);
+
     // 1) check if the table exists
 
     if (!api->cm->TableExists(tableName)) {
@@ -167,10 +205,6 @@ bool API::Select(const std::string tableName, const std::vector<MINI_TYPE::Condi
     tableRes.DisplayAttr(attrList);
 
     return true;
-}
-
-bool API::Select(std::string tableName, std::vector<MINI_TYPE::Condition> condList) {
-    Select(tableName, condList, api->cm->GetAttrNames(tableName));
 }
 
 bool API::Insert(std::string tableName, std::vector<MINI_TYPE::SqlValue> valueList) {

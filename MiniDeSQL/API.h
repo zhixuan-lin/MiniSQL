@@ -10,6 +10,8 @@
 
 class API {
 public:
+    static bool Execute(MINI_TYPE::SqlCommand sqlCommand);
+
     static bool CreateTable(MINI_TYPE::TableInfo tableInfo);
 
     static bool CreateIndex(MINI_TYPE::IndexInfo indexInfo);
@@ -23,9 +25,6 @@ public:
     static bool Select(std::string tableName,
                        std::vector<MINI_TYPE::Condition> condList,
                        std::vector<std::string> attrList);
-
-    static bool Select(std::string tableName,
-                       std::vector<MINI_TYPE::Condition> condList);
 
     static bool Insert(std::string tableName, std::vector<MINI_TYPE::SqlValue> valueList);
 
