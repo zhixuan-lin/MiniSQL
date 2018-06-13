@@ -18,7 +18,7 @@ public:
 	Block & Read(void * dest, int offset, std::size_t size);
 	Block & Flush();
     char & operator[](int i) { return content[i]; }
-    char * head_pointer() {return content;}
+    char * head_pointer(bool write) {if (write) dirty = true; return content;}
 private:
     Block & SetMRUtime(int t);
     Block & Reset();
@@ -37,7 +37,7 @@ private:
 class BufferManager
 {
 public:
-    BufferManager() {};
+    BufferManager(){};
     ~BufferManager() {FlushAllBlocks();}
 	Block * GetBlock(const std::string & filename, int block_id);
     void FreeBlock(const std::string & filename, int block_id);

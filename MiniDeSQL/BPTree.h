@@ -306,7 +306,7 @@ NodeSearchParse<T> BPTree<T>::findNode(const T &key) {
     NodeSearchParse<T> res;
     if (!root) { return res; }
     if (findKeyFromNode(root, key, res)) { return res; }
-    else { return res; }
+    else { return NodeSearchParse<T>(); }
 }
 
 template<typename T>
