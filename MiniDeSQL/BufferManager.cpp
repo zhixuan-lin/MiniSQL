@@ -62,12 +62,7 @@ Block & Block::Flush()
 	if (dirty)
 	{
 		dirty = false;
-        std::fstream fout(filename.c_str(), std::ios::in | std::ios::out | std::ios::binary);
-        if (not fout.is_open())
-        {
-            std::cerr << "Cannot open file " + filename + "!\n";
-            exit(0);
-        }
+        std::ofstream fout(filename, std::ios_base::binary | std::ios_base::app);
 		fout.seekp(block_id * MINI_TYPE::BlockSize);
 		fout.write(content, MINI_TYPE::BlockSize);
 		fout.close();
@@ -118,9 +113,9 @@ Block * BufferManager::GetBlock(const std::string & filename, int block_id)
 	{
 		Block & block = GetLRU();
         if (PastTheEndBlockID(filename) == block_id)
-            block.Reset().Flush().Connect(filename, block_id, false).SetPinned(true).SetMRUtime(access_counter++).Flush();
+            block.Reset().Flush().SetPinned(true).SetMRUtime(access_counter++).Connect(filename, block_id, false);
         else
-            block.Reset().Flush().Connect(filename, block_id, true).SetPinned(true).SetMRUtime(access_counter++).Flush();
+            block.Reset().Flush().SetPinned(true).SetMRUtime(access_counter++).Connect(filename, block_id, true);
         block_map.erase(std::make_pair(block.filename, block.block_id));
         block_map.insert(MapType::value_type(std::make_pair(filename, block_id), block));
 		return &block;
