@@ -38,7 +38,7 @@ public:
 
     void AttachIndexToTable(MINI_TYPE::TableInfo &tableInfo, std::string attrName);
 
-    void MakeAttrUnique(MINI_TYPE::TableInfo tableInfo, std::string attrName);
+    void MakeAttrUniqueAndPrimary(MINI_TYPE::TableInfo tableInfo, std::string attrName);
 
     MINI_TYPE::Attribute &GetAttrByName(MINI_TYPE::TableInfo tableInfo, std::string attrName);
 

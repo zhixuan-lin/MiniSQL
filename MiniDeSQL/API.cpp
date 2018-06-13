@@ -80,7 +80,7 @@ bool API::CreateTable(MINI_TYPE::TableInfo tableInfo) {
 
     // 3) start creating table
 
-    api->cm->MakeAttrUnique(tableInfo, tableInfo.primaryKey);
+    api->cm->MakeAttrUniqueAndPrimary(tableInfo, tableInfo.primaryKey);
     api->cm->CreateTable(tableInfo);
     api->rm->CreateTableFile(tableInfo);
     api->cm->CreateIndex(tableInfo.name, tableInfo.primaryKey);
