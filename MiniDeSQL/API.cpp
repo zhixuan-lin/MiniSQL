@@ -169,7 +169,7 @@ bool API::DropIndex(std::string indexName) {
     return true;
 }
 
-bool API::Delete(const std::string tableName, const std::vector<MINI_TYPE::Condition> condList) {
+bool API::Delete(const std::string tableName, std::vector<MINI_TYPE::Condition> condList) {
 
     // 1) check if the table exists
 
@@ -179,6 +179,9 @@ bool API::Delete(const std::string tableName, const std::vector<MINI_TYPE::Condi
     }
 
     // 2) start deleting
+    for (auto &cond : condList)
+        cond.value.type.type = api->cm->GetAttrTypeByName(tableName, cond.attributeName);
+
     api->rm->DeleteRecord(api->cm->GetTableByName(tableName), condList);
 
     return true;
@@ -239,10 +242,12 @@ bool API::Insert(std::string tableName, std::vector<MINI_TYPE::SqlValue> valueLi
 
     for (int i = 0; i < tableInfo.attributes.size(); i++) {
 
-        if (tableInfo.attributes[i].type != valueList[i].type) {
-            std::cerr << "Type mismatch." << std::endl;
-            return false;
-        }
+//        if (tableInfo.attributes[i].type != valueList[i].type) {
+//            std::cerr << "Type mismatch." << std::endl;
+//            return false;
+//        }
+
+        valueList[i].type = tableInfo.attributes[i].type;
 
         if (valueList[i].type.type == MINI_TYPE::TypeId::MiniChar &&
             !MINI_TYPE::IsValidString(valueList[i].type.char_size)) {

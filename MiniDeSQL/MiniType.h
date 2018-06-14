@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <map>
+#include <iomanip>
 
 namespace MINI_TYPE
 {
