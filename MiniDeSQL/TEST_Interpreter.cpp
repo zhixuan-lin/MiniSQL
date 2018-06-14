@@ -20,13 +20,13 @@ void DeleteTest();
 
 int main() {
 
-//    CreateTableTest();
-//    DropTableTest();
-//    CreateIndexTest();
-//    DropIndexTest();
+    CreateTableTest();
+    DropTableTest();
+    CreateIndexTest();
+    DropIndexTest();
     SelectTest();
-//    InsertTest();
-//    DeleteTest();
+    InsertTest();
+    DeleteTest();
 
     return 0;
 }
@@ -145,15 +145,15 @@ void InsertTest() {
 
     assert(command.commandType == InsertCmd);
     assert(command.tableName == "student");
-    assert(command.valueArray[0].type.type == MiniChar);
+//    assert(command.valueArray[0].type.type == MiniChar);
     assert(command.valueArray[0].str == "12345678");
-    assert(command.valueArray[1].type.type == MiniChar);
+//    assert(command.valueArray[1].type.type == MiniChar);
     assert(command.valueArray[1].str == "wy");
-    assert(command.valueArray[2].type.type == MiniInt);
+//    assert(command.valueArray[2].type.type == MiniInt);
     assert(command.valueArray[2].i == 22);
-    assert(command.valueArray[3].type.type == MiniChar);
+//    assert(command.valueArray[3].type.type == MiniChar);
     assert(command.valueArray[3].str == "M");
-    assert(command.valueArray.size() == 3);
+    assert(command.valueArray.size() == 4);
 }
 
 void DeleteTest() {

@@ -217,9 +217,69 @@ MINI_TYPE::SqlCommand Interpreter::ParseSelect(std::vector<std::string> tokens) 
 }
 
 MINI_TYPE::SqlCommand Interpreter::ParseInsert(std::vector<std::string> tokens) {
+    using namespace MINI_TYPE;
 
+    if (tokens.size() <= 4)
+        throw SyntaxError("Invalid number of arguments.");
+
+    SqlCommand sqlCommand;
+    sqlCommand.commandType = InsertCmd;
+    sqlCommand.tableName = tokens[2];
+
+    for (int pointer = 4; tokens.size() > pointer; pointer++) {
+        SqlValue sqlValue;
+
+        try {
+            sqlValue.i = std::stoi(tokens[pointer]);
+        } catch (...) {}
+
+        try {
+            sqlValue.f = std::stof(tokens[pointer]);
+        } catch (...) {}
+
+        sqlValue.str = tokens[pointer];
+
+        sqlCommand.valueArray.push_back(sqlValue);
+    }
+
+    return sqlCommand;
 }
 
 MINI_TYPE::SqlCommand Interpreter::ParseDelete(std::vector<std::string> tokens) {
+    using namespace MINI_TYPE;
 
+    if (tokens.size() < 3)
+        throw SyntaxError("Too few arguments.");
+
+    SqlCommand sqlCommand;
+    sqlCommand.commandType = DeleteCmd;
+    sqlCommand.tableName = tokens[2];
+
+    auto pointer = 2;
+
+    if (pointer + 1 < tokens.size() && tokens[pointer + 1] == "where") {
+        pointer += 2;
+        while (pointer < tokens.size()) {
+            Condition cond;
+            cond.attributeName = tokens[pointer];
+            cond.op = GetOpFromString(tokens[pointer + 1]);
+            SqlValue sqlValue;
+
+            try {
+                sqlValue.i = std::stoi(tokens[pointer + 2]);
+            } catch (...) {}
+
+            try {
+                sqlValue.f = std::stof(tokens[pointer + 2]);
+            } catch (...) {}
+
+            sqlValue.str = tokens[pointer + 2];
+
+            cond.value = sqlValue;
+            sqlCommand.condArray.push_back(cond);
+            pointer += 4;
+        }
+    }
+
+    return sqlCommand;
 }
