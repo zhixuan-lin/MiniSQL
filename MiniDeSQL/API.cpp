@@ -20,6 +20,7 @@ API::~API() {
 
 bool API::Exit() {
     delete api;
+    return true;
 }
 
 bool API::Execute(MINI_TYPE::SqlCommand sqlCommand) {
@@ -54,6 +55,7 @@ bool API::Execute(MINI_TYPE::SqlCommand sqlCommand) {
             // DO NOTHING
             break;
     }
+    return true;
 }
 
 bool API::CreateTable(MINI_TYPE::TableInfo tableInfo) {

@@ -106,6 +106,7 @@ bool CatalogManager::DeleteIndex(std::string indexName) {
 bool CatalogManager::CreateIndex(std::string tableName, std::string attrName) {
     MINI_TYPE::IndexInfo indexInfo(std::move(tableName), std::move(attrName));
     indexInfos.push_back(indexInfo);
+    return true;
 }
 
 void CatalogManager::MakeAttrUniqueAndPrimary(MINI_TYPE::TableInfo tableInfo, std::string attrName) {
@@ -118,6 +119,8 @@ MINI_TYPE::Attribute &CatalogManager::GetAttrByName(MINI_TYPE::TableInfo tableIn
     for (auto &attr : tableInfo.attributes)
         if (attr.name == attrName)
             return attr;
+    std::cerr << "In GetAttrByName: No such attribute exists!\n";
+    std::exit(0);
 }
 
 MINI_TYPE::Attribute &CatalogManager::GetAttrByName(std::string tableName, std::string attrName) {
@@ -125,6 +128,8 @@ MINI_TYPE::Attribute &CatalogManager::GetAttrByName(std::string tableName, std::
     for (auto &attr : tableInfo.attributes)
         if (attr.name == attrName)
             return attr;
+    std::cerr << "In GetAttrByName: No such attribute exists!\n";
+    std::exit(0);
 }
 
 MINI_TYPE::TableInfo &CatalogManager::GetTableByName(std::string tableName) {
@@ -163,6 +168,8 @@ MINI_TYPE::IndexInfo &CatalogManager::GetIndexByName(std::string indexName) {
     for (auto &index : indexInfos)
         if (index.name == indexName)
             return index;
+    std::cerr << "In GetIndexByName: No such index exists!\n";
+    std::exit(0);
 }
 
 MINI_TYPE::IndexInfo &CatalogManager::GetPrimaryIndex(MINI_TYPE::TableInfo tableInfo) {
