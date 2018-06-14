@@ -39,14 +39,14 @@ MINI_TYPE::SqlCommand Interpreter::ReadCommand() {
 MINI_TYPE::SqlCommand Interpreter::Parse(std::string input) {
     using namespace std;
 
-    auto token = strtok(const_cast<char *>(input.c_str()), ",;()\n\' ");
+    auto token = strtok(const_cast<char *>(input.c_str()), ",;()\n\' ‘’");
 
     vector<string> tokens;
 
     while (token) {
         if (strcmp(token, "") != 0) {
             tokens.emplace_back(token);
-            token = strtok(nullptr, ",;()\n\' ");
+            token = strtok(nullptr, ",;()\n\' ‘’");
         }
     }
 
@@ -196,23 +196,20 @@ MINI_TYPE::SqlCommand Interpreter::ParseSelect(std::vector<std::string> tokens) 
             cond.attributeName = tokens[pointer];
             cond.op = GetOpFromString(tokens[pointer + 1]);
             SqlValue sqlValue;
+
             try {
-                sqlValue.type.type = MiniInt;
                 sqlValue.i = std::stoi(tokens[pointer + 2]);
-            } catch (...) {
-                try {
-                    sqlValue.type.type = MiniFloat;
-                    sqlValue.f = std::stof(tokens[pointer + 2]);
-                } catch (...) {
-                    std::string tokenToAdd = tokens[pointer + 2].substr(1, tokenToAdd.size() - 2);
-                    sqlValue.type.type = MiniChar;
-                    sqlValue.type.char_size = tokenToAdd.size();
-                    sqlValue.str = tokenToAdd;
-                }
-            }
+            } catch (...) {}
+
+            try {
+                sqlValue.f = std::stof(tokens[pointer + 2]);
+            } catch (...) {}
+
+            sqlValue.str = tokens[pointer + 2];
+
             cond.value = sqlValue;
             sqlCommand.condArray.push_back(cond);
-            pointer += 3;
+            pointer += 4;
         }
     }
 

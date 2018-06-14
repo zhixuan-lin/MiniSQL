@@ -186,3 +186,9 @@ std::vector<std::string> CatalogManager::GetAttrNames(std::string tableName) {
         res.push_back(attr.name);
     return res;
 }
+
+MINI_TYPE::TypeId CatalogManager::GetAttrTypeByName(std::string tableName, std::string attrName) {
+    auto &tableInfo = GetTableByName(std::move(tableName));
+    auto &attribute = GetAttrByName(tableInfo, std::move(attrName));
+    return attribute.type.type;
+}

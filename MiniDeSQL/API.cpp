@@ -182,7 +182,7 @@ bool API::Delete(const std::string tableName, const std::vector<MINI_TYPE::Condi
     return true;
 }
 
-bool API::Select(const std::string tableName, const std::vector<MINI_TYPE::Condition> condList,
+bool API::Select(const std::string tableName, std::vector<MINI_TYPE::Condition> condList,
                  std::vector<std::string> attrList) {
 
     if (attrList.empty())
@@ -199,9 +199,11 @@ bool API::Select(const std::string tableName, const std::vector<MINI_TYPE::Condi
     MINI_TYPE::Table tableRes;
 
     bool existNeq = false;
-    for (auto &cond : condList)
+    for (auto &cond : condList) {
         if (cond.op == MINI_TYPE::Operator::NotEqual)
             existNeq = true;
+        cond.value.type.type = api->cm->GetAttrTypeByName(tableName, cond.attributeName);
+    }
 
     auto &tableInfo = api->cm->GetTableByName(tableName);
     if (existNeq)
