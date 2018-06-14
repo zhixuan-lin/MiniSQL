@@ -208,12 +208,15 @@ bool API::Select(const std::string tableName, std::vector<MINI_TYPE::Condition> 
     }
 
     auto &tableInfo = api->cm->GetTableByName(tableName);
-    if (existNeq)
+//    if (existNeq)
         tableRes = api->rm->SelectRecord(tableInfo, condList);
-    else // TODO: to be modified
-        tableRes = api->rm->SelectRecord(tableInfo, condList, api->cm->GetPrimaryIndex(tableInfo).name);
+//    else // TODO: to be modified
+//        tableRes = api->rm->SelectRecord(tableInfo, condList, api->cm->GetPrimaryIndex(tableInfo).name);
 
-    tableRes.DisplayAttr(attrList);
+    if (tableRes.records.empty())
+        std::cout << "Not Found." << std::endl;
+    else
+        tableRes.DisplayAttr(attrList);
 
     return true;
 }

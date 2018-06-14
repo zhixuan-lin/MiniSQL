@@ -15,12 +15,13 @@ void DeleteTest();
 int main() {
 
     CreateTableTest();
-    DropTableTest();
-    CreateIndexTest();
-    DropIndexTest();
-    SelectTest();
+//    DropTableTest();
+//    CreateIndexTest();
+//    DropIndexTest();
+//    SelectTest();
     InsertTest();
-    DeleteTest();
+    SelectTest();
+//    DeleteTest();
 
     API::Exit();
 

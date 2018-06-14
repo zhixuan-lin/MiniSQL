@@ -172,10 +172,11 @@ namespace MINI_TYPE
     std::ostream &operator<<(std::ostream &out, const TableInfo tableInfo) {
         
         out << tableInfo.name << ' '
-        << tableInfo.record_count << ' '
-        << tableInfo.record_length << ' '
-        << tableInfo.attributes.size() << ' '
-        << tableInfo.indices.size() << ' ';
+            << tableInfo.primaryKey << ' '
+            << tableInfo.record_count << ' '
+            << tableInfo.record_length << ' '
+            << tableInfo.attributes.size() << ' '
+            << tableInfo.indices.size() << ' ';
         
         for (auto &attribute : tableInfo.attributes)
             out << attribute << ' ';

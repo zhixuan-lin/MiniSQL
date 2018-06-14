@@ -109,8 +109,8 @@ bool CatalogManager::CreateIndex(std::string tableName, std::string attrName) {
     return true;
 }
 
-void CatalogManager::MakeAttrUniqueAndPrimary(MINI_TYPE::TableInfo tableInfo, std::string attrName) {
-    auto &attr = GetAttrByName(std::move(tableInfo), std::move(attrName));
+void CatalogManager::MakeAttrUniqueAndPrimary(MINI_TYPE::TableInfo &tableInfo, std::string attrName) {
+    auto &attr = GetAttrByName(tableInfo, attrName);
     attr.unique = true;
     attr.primary = true;
 }
