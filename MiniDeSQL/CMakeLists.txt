@@ -12,6 +12,7 @@ add_executable(MiniSQL
         IndexManager.cpp
         IndexManager.hpp
         MiniType.h
+        MiniType.cpp
         RecordManager.cpp
         RecordManager.hpp
         CatalogManager.h

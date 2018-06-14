@@ -360,13 +360,13 @@ namespace MINI_TYPE
     bool Test(const std::vector<Condition> & conditions, const TableInfo & table, const Record & record)
     {
         for (const auto & cond : conditions)
-            if (not cond.Test(record.Extract(table, cond.attribute.name).values[0]))
+            if (not cond.Test(record.Extract(table, cond.attributeName).values[0]))
                 return false;
         return true;
     }
     bool Test(Condition & condition, const TableInfo & table, const Record & record)
     {
-        if (not condition.Test(record.Extract(table, condition.attribute.name).values[0]))
+        if (not condition.Test(record.Extract(table, condition.attributeName).values[0]))
             return false;
         return true;
     }

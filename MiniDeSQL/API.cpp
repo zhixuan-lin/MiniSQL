@@ -135,7 +135,10 @@ bool API::DropTable(const std::string tableName) {
     }
 
     // 2) start deleting
-    api->rm->DropIndex(api->cm->GetIndexConcerned(tableName));
+    auto &tableInfo = api->cm->GetTableByName(tableName);
+    auto indexInfos = api->cm->GetIndexInfoConcerned(tableInfo);
+    for (auto &indexInfo : indexInfos)
+        api->rm->DropIndex(tableInfo, api->cm->GetAttrByName(tableInfo, indexInfo.attribute));
     api->cm->DeleteTable(tableName); // includes DeleteIndex
     api->cm->SaveCatalogToFile();
 
@@ -146,14 +149,18 @@ bool API::DropIndex(std::string indexName) {
 
     // 1) check if the index exists
 
-    if (!api->cm->IndexFindAndNormalizeAlias(indexName)) {
+    auto indexInfo = api->cm->IndexFindAndNormalizeAlias(indexName);
+    if (indexInfo.table == "NULL") {
         std::cerr << "Index " << indexName << " does not exist." << std::endl;
         return false;
     }
 
     // 2) start deleting
-
-    api->rm->DropIndex(indexName);
+    auto &tableInfo = api->cm->GetTableByName(indexInfo.table);
+    api->rm->DropIndex(
+            tableInfo,
+            api->cm->GetAttrByName(tableInfo, indexInfo.attribute)
+    );
     api->cm->DeleteIndex(indexName);
     api->cm->SaveCatalogToFile();
 
@@ -200,7 +207,7 @@ bool API::Select(const std::string tableName, const std::vector<MINI_TYPE::Condi
     if (existNeq)
         tableRes = api->rm->SelectRecord(tableInfo, condList);
     else // TODO: to be modified
-        tableRes = api->rm->SelectRecord(tableInfo, condList, api->cm->GetPrimaryIndex(tableInfo));
+        tableRes = api->rm->SelectRecord(tableInfo, condList, api->cm->GetPrimaryIndex(tableInfo).name);
 
     tableRes.DisplayAttr(attrList);
 

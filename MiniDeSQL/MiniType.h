@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstring>
 #include <cstdlib>
+#include <algorithm>
 #include <map>
 
 namespace MINI_TYPE
@@ -218,7 +219,8 @@ namespace MINI_TYPE
     std::istream &operator>>(std::istream &in, Attribute &attribute);
     std::istream &operator>>(std::istream &in, std::pair<std::string, std::string> &index);
     std::istream &operator>>(std::istream &in, TableInfo &tableInfo);
-    std::istream &operator>>(std::istream &in, IndexInfo indexInfo);
+
+	std::istream &operator>>(std::istream &in, IndexInfo &indexInfo);
     std::istream &operator>>(std::istream &in, SqlValueType &sqlValueType);
 }
 

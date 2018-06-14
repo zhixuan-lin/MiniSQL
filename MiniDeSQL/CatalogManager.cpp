@@ -150,6 +150,15 @@ std::vector<std::string> CatalogManager::GetIndexConcerned(std::string tableName
     return indexNames;
 }
 
+std::vector<MINI_TYPE::IndexInfo> CatalogManager::GetIndexInfoConcerned(MINI_TYPE::TableInfo tableInfo) {
+    std::vector<MINI_TYPE::IndexInfo> indexInfos;
+    for (auto &pair : tableInfo.indices) {
+        MINI_TYPE::IndexInfo indexInfo(tableInfo.name, pair.first);
+        indexInfos.push_back(indexInfo);
+    }
+    return indexInfos;
+}
+
 MINI_TYPE::IndexInfo &CatalogManager::GetIndexByName(std::string indexName) {
     for (auto &index : indexInfos)
         if (index.name == indexName)
@@ -160,13 +169,14 @@ MINI_TYPE::IndexInfo &CatalogManager::GetPrimaryIndex(MINI_TYPE::TableInfo table
     return GetIndexByName(MINI_TYPE::IndexName(tableInfo.name, tableInfo.primaryKey));
 }
 
-bool CatalogManager::IndexFindAndNormalizeAlias(std::string& indexAlias) {
+MINI_TYPE::IndexInfo CatalogManager::IndexFindAndNormalizeAlias(std::string &indexAlias) {
     for (auto &index : indexInfos)
         if (indexAlias == index.name || indexAlias == index.alias) {
             indexAlias = index.name;
-            return true;
+            return index;
         }
-    return false;
+    MINI_TYPE::IndexInfo indexInfo("NULL", "NULL");
+    return indexInfo;
 }
 
 std::vector<std::string> CatalogManager::GetAttrNames(std::string tableName) {
