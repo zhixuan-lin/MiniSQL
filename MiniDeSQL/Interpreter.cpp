@@ -12,7 +12,7 @@ void Interpreter::MainInteractive() {
         }
         catch (MINI_TYPE::SyntaxError &err) {
             std::cerr << err.what() << std::endl;
-            break;
+//            break;
         };
     }
 }

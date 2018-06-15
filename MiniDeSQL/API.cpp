@@ -124,7 +124,6 @@ bool API::CreateIndex(const MINI_TYPE::IndexInfo indexInfo) {
     // 4) start creating index
     api->cm->CreateIndex(indexInfo);
     api->cm->AttachIndexToTable(indexInfo);
-    // TODO: index file?
 
     auto &tableInfo = api->cm->GetTableByName(indexInfo.table);
     api->rm->BuildIndex(tableInfo, api->cm->GetAttrByName(tableInfo, indexInfo.attribute));
@@ -208,20 +207,23 @@ bool API::Select(const std::string tableName, std::vector<MINI_TYPE::Condition> 
 
     // 2) start selecting
     MINI_TYPE::Table tableRes;
+    std::vector<std::string> attrWithIndexList;
 
     bool existNeq = false;
     for (auto &cond : condList) {
         if (cond.op == MINI_TYPE::Operator::NotEqual)
             existNeq = true;
         cond.value.type.type = api->cm->GetAttrTypeByName(tableName, cond.attributeName);
+        if (api->cm->IndexExists(MINI_TYPE::IndexName(tableName, cond.attributeName)))
+            attrWithIndexList.push_back(cond.attributeName);
     }
 
     auto &tableInfo = api->cm->GetTableByName(tableName);
-    if (existNeq || condList.empty())
+    if (existNeq || attrWithIndexList.empty())
         tableRes = api->rm->SelectRecord(tableInfo, condList);
     else
         tableRes = api->rm->SelectRecord(tableInfo, condList,
-                                         MINI_TYPE::IndexName(tableName, condList[0].attributeName));
+                                         attrWithIndexList[0]);
 
     if (tableRes.records.empty())
         std::cout << "Not Found." << std::endl;
