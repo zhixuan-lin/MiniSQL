@@ -136,6 +136,8 @@ MINI_TYPE::TableInfo &CatalogManager::GetTableByName(std::string tableName) {
     for (auto &table : tableInfos)
         if (table.name == tableName)
             return table;
+    std::cerr << "In GetTableByName: No such attribute exists!\n";
+    std::exit(0);
 }
 
 void CatalogManager::AttachIndexToTable(MINI_TYPE::IndexInfo indexInfo) {
