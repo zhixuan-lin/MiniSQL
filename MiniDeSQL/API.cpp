@@ -85,8 +85,12 @@ bool API::CreateTable(MINI_TYPE::TableInfo tableInfo) {
     api->cm->MakeAttrUniqueAndPrimary(tableInfo, tableInfo.primaryKey);
     api->cm->CreateTable(tableInfo);
     api->rm->CreateTableFile(tableInfo);
-    api->cm->CreateIndex(tableInfo.name, tableInfo.primaryKey);
-    api->rm->BuildIndex(tableInfo, api->cm->GetAttrByName(tableInfo, tableInfo.primaryKey));
+    for (auto &attr : tableInfo.attributes) {
+        if (attr.unique) {
+            api->cm->CreateIndex(tableInfo.name, attr.name);
+            api->rm->BuildIndex(tableInfo, api->cm->GetAttrByName(tableInfo, attr.name));
+        }
+    }
     api->cm->SaveCatalogToFile();
 
     return true;
@@ -211,10 +215,11 @@ bool API::Select(const std::string tableName, std::vector<MINI_TYPE::Condition> 
     }
 
     auto &tableInfo = api->cm->GetTableByName(tableName);
-//    if (existNeq)
+    if (existNeq || condList.empty())
         tableRes = api->rm->SelectRecord(tableInfo, condList);
-//    else // TODO: to be modified
-//        tableRes = api->rm->SelectRecord(tableInfo, condList, api->cm->GetPrimaryIndex(tableInfo).name);
+    else
+        tableRes = api->rm->SelectRecord(tableInfo, condList,
+                                         MINI_TYPE::IndexName(tableName, condList[0].attributeName));
 
     if (tableRes.records.empty())
         std::cout << "Not Found." << std::endl;
@@ -254,6 +259,13 @@ bool API::Insert(std::string tableName, std::vector<MINI_TYPE::SqlValue> valueLi
             std::cerr << "Invalid string." << std::endl;
             return false;
         }
+
+        if (tableInfo.attributes[i].unique)
+            if (api->rm->im->Find(MINI_TYPE::IndexName(tableInfo.name, tableInfo.attributes[i].name), valueList[i]) !=
+                IndexManager::end) {
+                std::cerr << "Attribute " << tableInfo.attributes[i].name << " should be unique." << std::endl;
+                return false;
+            }
 
     }
 

@@ -104,7 +104,7 @@ bool CatalogManager::DeleteIndex(std::string indexName) {
 }
 
 bool CatalogManager::CreateIndex(std::string tableName, std::string attrName) {
-    MINI_TYPE::IndexInfo indexInfo(std::move(tableName), std::move(attrName));
+    MINI_TYPE::IndexInfo indexInfo(tableName, attrName);
     indexInfos.push_back(indexInfo);
     return true;
 }

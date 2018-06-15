@@ -2,6 +2,7 @@
 #define MINISQL_INTERPRETER_H
 
 #include "MiniType.h"
+#include "API.h"
 
 #include <cstring>
 

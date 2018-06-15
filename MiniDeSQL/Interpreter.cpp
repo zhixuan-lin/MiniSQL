@@ -3,7 +3,8 @@
 void Interpreter::MainInteractive() {
     while (true) {
         try {
-            ReadCommand();
+            auto command = ReadCommand();
+            API::Execute(command);
         }
         catch (MINI_TYPE::SyntaxError &err) {
             std::cerr << err.what() << std::endl;
@@ -49,6 +50,15 @@ MINI_TYPE::SqlCommand Interpreter::Parse(std::string input) {
             token = strtok(nullptr, ",;()\n\' ‘’");
         }
     }
+
+//    if (tokens[0] == "execfile") {
+//        ifstream infile("test.sql");
+//        string line;
+//        while(!infile.eof()) {
+//            getline(infile, line);
+//            Parse(line);
+//        }
+//    }
 
     if (tokens[0] == "create") {
         if (tokens[1] == "table")

@@ -21,7 +21,8 @@ int main() {
 //    SelectTest();
     InsertTest();
     SelectTest();
-//    DeleteTest();
+    DeleteTest();
+    SelectTest();
 
     API::Exit();
 
@@ -123,7 +124,7 @@ void InsertTest(){
     SqlValueType t2(MiniInt);
     SqlValueType t3(MiniChar, 1);
 
-    SqlValue v0(t0, "12345678");
+    SqlValue v0(t0, "88888888");
     SqlValue v1(t1, "wy");
     SqlValue v2(t2, 22);
     SqlValue v3(t3, "M");
