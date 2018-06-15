@@ -113,7 +113,7 @@ bool RecordManager::BuildIndex(MINI_TYPE::TableInfo & table, const MINI_TYPE::At
 bool RecordManager::DropIndex(MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute)
 {
     std::string index_name = MINI_TYPE::IndexName(table.name, attribute.name);
-    table.indices.erase(attribute.name);
+//    table.indices.erase(attribute.name);
     im->DropIndex(index_name);
     return true;
 }
