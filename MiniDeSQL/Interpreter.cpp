@@ -4,6 +4,10 @@ void Interpreter::MainInteractive() {
     while (true) {
         try {
             auto command = ReadCommand();
+            if (command.commandType == MINI_TYPE::QuitCmd) {
+                API::Exit();
+                break;
+            }
             API::Execute(command);
         }
         catch (MINI_TYPE::SyntaxError &err) {
@@ -23,6 +27,12 @@ MINI_TYPE::SqlCommand Interpreter::ReadCommand() {
     while (true) {
         string line;
         getline(cin, line);
+
+        if (line == "exit;") {
+            MINI_TYPE::SqlCommand sqlCommand;
+            sqlCommand.commandType = MINI_TYPE::QuitCmd;
+            return sqlCommand;
+        }
 
         if (line[line.size() - 1] == ';') {
             lines += line.substr(0, line.size() - 1);
@@ -84,6 +94,8 @@ MINI_TYPE::SqlCommand Interpreter::Parse(std::string input) {
 
     if (tokens[0] == "delete")
         return ParseDelete(tokens);
+
+    throw MINI_TYPE::SyntaxError("Invalid input");
 }
 
 MINI_TYPE::SqlCommand Interpreter::ParseCreateTable(std::vector<std::string> tokens) {

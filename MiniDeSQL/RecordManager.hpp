@@ -10,11 +10,6 @@ class RecordManager
 {
 public:
     RecordManager(BufferManager *bm, IndexManager *im) : bm(bm), im(im) {}
-
-    ~RecordManager() {
-        delete bm;
-        delete im;
-    }
     bool CreateTableFile(const MINI_TYPE::TableInfo & table);
     bool DeleteTableFile(const MINI_TYPE::TableInfo & table);
     bool BuildIndex(MINI_TYPE::TableInfo & table, const MINI_TYPE::Attribute & attribute);

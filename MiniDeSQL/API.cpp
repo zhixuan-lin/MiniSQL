@@ -14,6 +14,8 @@ API::API() {
 }
 
 API::~API() {
+    delete rm->bm;
+    delete rm->im;
     delete rm;
     delete cm;
 }
