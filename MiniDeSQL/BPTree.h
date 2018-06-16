@@ -382,6 +382,14 @@ template<typename T>
 bool BPTree<T>::insert(const T &key, int offset)
 {
 	NodeSearchParse<T> res;
+    if (!root)
+    {
+        root = new BPTreeNode<T>(degree, true);
+        keyCount = 0;
+        level = 1;
+        nodeCount = 1;
+        head = root;
+    }
 	if(!findKeyFromNode(root,key,res))
 	{
 		res.node->add(key,offset);
