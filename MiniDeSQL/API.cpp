@@ -71,10 +71,10 @@ bool API::CreateTable(MINI_TYPE::TableInfo tableInfo) {
 
     // 2) check if the parameters are valid
 
-    if (tableInfo.primaryKey.empty()) {
-        std::cerr << "No primary key." << std::endl;
-        return false;
-    }
+//    if (tableInfo.primaryKey.empty()) {
+//        std::cerr << "No primary key." << std::endl;
+//        return false;
+//    }
 
     for (auto &attr : tableInfo.attributes)
         if (attr.type.type == MINI_TYPE::TypeId::MiniChar && !MINI_TYPE::IsValidString(attr.type.char_size)) {
