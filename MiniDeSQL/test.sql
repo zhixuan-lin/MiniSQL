@@ -7,9 +7,15 @@ create table testTableA (
     primary key (number)
 );
 
+select * from testTableA;
+
 insert into testTableA values ("A", 18, 123);
 
+select * from testTableA;
+
 insert into testTableA values ("B", 20, 124);
+
+select * from testTableA;
 
 insert into testTableA values ("X", 18, 125);
 

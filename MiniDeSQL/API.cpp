@@ -147,6 +147,7 @@ bool API::DropTable(const std::string tableName) {
     auto indexInfos = api->cm->GetIndexInfoConcerned(tableInfo);
     for (auto &indexInfo : indexInfos)
         api->rm->DropIndex(tableInfo, api->cm->GetAttrByName(tableInfo, indexInfo.attribute));
+    api->rm->DeleteTableFile(tableInfo);
     api->cm->DeleteTable(tableName); // includes DeleteIndex
     api->cm->SaveCatalogToFile();
 
