@@ -16,7 +16,7 @@ class BPTreeNode {
 public:
     BPTreeNode() = default;
 
-    BPTreeNode() {}
+//    BPTreeNode() {}
 
     BPTreeNode(int degree, bool isLeaf);
 
@@ -539,7 +539,7 @@ bool BPTree<T>::leafmergeL1(TreeNode parent, TreeNode node, TreeNode sibling, in
 
     for (int i = 0; i < Cnt2; i++) {
         node->keys[Cnt1 + i] = sibling->keys[i];
-        node->keyOffset[Cnt1 + i] = sibling->keys[i];
+        node->keyOffset[Cnt1 + i] = sibling->keyOffset[i];
     }
     if (node == parent->children[0]) {
         parent->removeAt(0);
