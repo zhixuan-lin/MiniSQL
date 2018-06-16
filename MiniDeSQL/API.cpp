@@ -35,7 +35,7 @@ bool API::Execute(MINI_TYPE::SqlCommand sqlCommand) {
             DropTable(sqlCommand.tableName);
             break;
         case CreateIndexCmd:
-            CreateIndex(sqlCommand.indexInfo);
+//            CreateIndex(sqlCommand.indexInfo);
             break;
         case DropIndexCmd:
             DropIndex(sqlCommand.indexName);
@@ -84,7 +84,8 @@ bool API::CreateTable(MINI_TYPE::TableInfo tableInfo) {
 
     // 3) start creating table
 
-    api->cm->MakeAttrUniqueAndPrimary(tableInfo, tableInfo.primaryKey);
+    if (!tableInfo.primaryKey.empty())
+        api->cm->MakeAttrUniqueAndPrimary(tableInfo, tableInfo.primaryKey);
     api->cm->CreateTable(tableInfo);
     api->rm->CreateTableFile(tableInfo);
     for (auto &attr : tableInfo.attributes) {

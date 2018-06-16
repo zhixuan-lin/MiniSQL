@@ -155,7 +155,7 @@ MINI_TYPE::SqlCommand Interpreter::ParseCreateTable(std::vector<std::string> tok
             i = i + 3;
         }
 
-        if (tokens[i] == "unique") {
+        if (i < tokens.size() && tokens[i] == "unique") {
             attribute.unique = true;
             i++;
         }
