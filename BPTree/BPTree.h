@@ -14,8 +14,6 @@ class BPTreeNode {
 public:
     BPTreeNode() = default;
 
-	BPTreeNode(){}
-
     BPTreeNode(int degree, bool isLeaf);
 
     ~BPTreeNode(){}
@@ -182,14 +180,6 @@ int BPTreeNode<T>::add(const T &key, int offset)
 	keys[Pos] = key;
 	cnt++;
 
-	//Test
-	// cout << "##### Add #####" << endl;
-	// for(int i = 0; i < cnt; i++)
-	// {
-	// 	cout << keys[i] << " ";
-	// }
-	// cout << endl << "###############" << endl;
-
 	return Pos;
 }
 
@@ -219,14 +209,6 @@ void BPTreeNode<T>::removeAt(int index)
         children[cnt] = nullptr;
 	}
 	cnt--;
-
-	//Test
-	// cout << "##### rem #####" << endl;
-	// for(int i = 0; i < cnt; i++)
-	// {
-	// 	cout << keys[i] << " ";
-	// }
-	// cout << endl << "###############" << endl;
 }
 
 template<typename T>
@@ -352,12 +334,10 @@ int BPTree<T>::find(const T &key)
 template<typename T>
 NodeSearchParse<T> BPTree<T>::findNode(const T &key)
 {
-	NodeSearchParse<T> res;
-	if(root)
-	{
-		findKeyFromNode(root,key,res);
-	}
-	return res;
+    NodeSearchParse<T> res;
+    if (!root) { return res; }
+    if (findKeyFromNode(root, key, res)) { return res; }
+    else { return NodeSearchParse<T>(); }
 }
 
 template<typename T>
@@ -410,8 +390,6 @@ bool BPTree<T>::insert(const T &key, int offset)
 			cascadeInsert(res.node);
 		}
 		keyCount++;
-
-		TreeNode p = head;
 
 		return true;
 	}
@@ -644,7 +622,7 @@ bool BPTree<T>::leafmergeL1(TreeNode parent, TreeNode node, TreeNode sibling, in
 	for(int i = 0; i < Cnt2; i++)
 	{
 		node->keys[Cnt1+i] = sibling->keys[i];
-		node->keyOffset[Cnt1+i] = sibling->keys[i];
+		node->keyOffset[Cnt1+i] = sibling->keyOffset[i];
 	}
 	if (node == parent->children[0]) 
 	{
@@ -712,7 +690,7 @@ bool BPTree<T>::branchmergeR1(TreeNode parent, TreeNode node, TreeNode sibling, 
 template<typename T>
 bool BPTree<T>::branchmergeR2(TreeNode parent, TreeNode node, TreeNode sibling, int index)
 {
-	int Cnt1 = node->cnt, Cnt2 = sibling->cnt;
+	int Cnt2 = sibling->cnt;
 	T key = sibling->keys[Cnt2-1];
 	node->add(key);
 	node->children[0] = sibling->children[Cnt2];
