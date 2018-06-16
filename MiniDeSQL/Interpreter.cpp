@@ -4,11 +4,38 @@ void Interpreter::MainInteractive() {
     while (true) {
         try {
             auto command = ReadCommand();
+
             if (command.commandType == MINI_TYPE::QuitCmd) {
                 API::Exit();
                 break;
             }
-            API::Execute(command);
+
+            if (command.commandType == MINI_TYPE::ExecfileCmd) {
+
+                ifstream infile(command.fileName);
+
+                if (!infile.good())
+                    throw MINI_TYPE::SyntaxError("File " + command.fileName + " does not exist.");
+
+                while (!infile.eof()) {
+
+                    string lines;
+
+                    while (true) {
+                        string line;
+                        getline(infile, line);
+                        if (line[line.size() - 1] == ';') {
+                            lines += line.substr(0, line.size() - 1);
+                            break;
+                        } else {
+                            lines += line;
+                        }
+                    }
+
+                    API::Execute(Parse(lines));
+                }
+            } else
+                API::Execute(command);
         }
         catch (MINI_TYPE::SyntaxError &err) {
             std::cerr << err.what() << std::endl;
@@ -27,12 +54,6 @@ MINI_TYPE::SqlCommand Interpreter::ReadCommand() {
     while (true) {
         string line;
         getline(cin, line);
-
-        if (line == "exit;") {
-            MINI_TYPE::SqlCommand sqlCommand;
-            sqlCommand.commandType = MINI_TYPE::QuitCmd;
-            return sqlCommand;
-        }
 
         if (line[line.size() - 1] == ';') {
             lines += line.substr(0, line.size() - 1);
@@ -61,15 +82,6 @@ MINI_TYPE::SqlCommand Interpreter::Parse(std::string input) {
         }
     }
 
-//    if (tokens[0] == "execfile") {
-//        ifstream infile("test.sql");
-//        string line;
-//        while(!infile.eof()) {
-//            getline(infile, line);
-//            Parse(line);
-//        }
-//    }
-
     if (tokens[0] == "create") {
         if (tokens[1] == "table")
             return ParseCreateTable(tokens);
@@ -94,6 +106,12 @@ MINI_TYPE::SqlCommand Interpreter::Parse(std::string input) {
 
     if (tokens[0] == "delete")
         return ParseDelete(tokens);
+
+    if (tokens[0] == "quit")
+        return ParseExit(tokens);
+
+    if (tokens[0] == "execfile")
+        return ParseExecFile(tokens);
 
     throw MINI_TYPE::SyntaxError("Invalid input");
 }
@@ -302,6 +320,28 @@ MINI_TYPE::SqlCommand Interpreter::ParseDelete(std::vector<std::string> tokens) 
             pointer += 4;
         }
     }
+
+    return sqlCommand;
+}
+
+MINI_TYPE::SqlCommand Interpreter::ParseExit(std::vector<std::string> tokens) {
+    using namespace MINI_TYPE;
+
+    SqlCommand sqlCommand;
+    sqlCommand.commandType = QuitCmd;
+
+    return sqlCommand;
+}
+
+MINI_TYPE::SqlCommand Interpreter::ParseExecFile(std::vector<std::string> tokens) {
+    using namespace MINI_TYPE;
+
+    if (tokens.size() != 2)
+        throw SyntaxError("Invalid number of arguments.");
+
+    SqlCommand sqlCommand;
+    sqlCommand.commandType = ExecfileCmd;
+    sqlCommand.fileName = tokens[1];
 
     return sqlCommand;
 }

@@ -11,6 +11,7 @@ public:
     static void MainInteractive();
 
     static MINI_TYPE::SqlCommand ReadCommand();
+
     static MINI_TYPE::SqlCommand Parse(std::string input);
 
     static MINI_TYPE::SqlCommand ParseCreateTable(std::vector<std::string> tokens);
@@ -26,6 +27,10 @@ public:
     static MINI_TYPE::SqlCommand ParseInsert(std::vector<std::string> tokens);
 
     static MINI_TYPE::SqlCommand ParseDelete(std::vector<std::string> tokens);
+
+    static MINI_TYPE::SqlCommand ParseExit(std::vector<std::string> tokens);
+
+    static MINI_TYPE::SqlCommand ParseExecFile(std::vector<std::string> tokens);
 };
 
 

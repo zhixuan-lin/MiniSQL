@@ -178,6 +178,7 @@ namespace MINI_TYPE
         IndexInfo indexInfo;
         std::string tableName;
         std::string indexName;
+        std::string fileName;
         std::vector<Condition> condArray;
         std::vector<SqlValue> valueArray;
         std::vector<std::string> attrList;
