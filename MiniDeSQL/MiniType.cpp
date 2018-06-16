@@ -311,18 +311,26 @@ namespace MINI_TYPE
     
     void Table::DisplayAttr(std::vector<std::string> attrList) {
         std::vector<int> attrIdx;
+        std::vector<int> displayLen(attrList.size());
+
+        for (auto &record : records)
+            for (auto &idx : attrIdx)
+                displayLen[idx] = static_cast<int>(record.values[idx].ToStr().size() > displayLen[idx] ?
+                                                   record.values[idx].ToStr().size() : displayLen[idx]);
 
         for (int i = 0; info.attributes.size() > i; i++)
             if (std::find(attrList.begin(), attrList.end(), info.attributes[i].name) != attrList.end()) {
                 attrIdx.push_back(i);
-                std::cout << info.attributes[i].name << '\t';
+                displayLen[i] = static_cast<int>(attrList[i].size() > displayLen[i] ?
+                                                 attrList[i].size() : displayLen[i]);
+                std::cout << std::setw(displayLen[i]) << info.attributes[i].name << '|';
             }
 
         std::cout << std::endl;
 
         for (auto &record : records) {
             for (auto &idx : attrIdx) {
-                std::cout << record.values[idx].ToStr() << '\t';
+                std::cout << std::setw(displayLen[idx]) << record.values[idx].ToStr() << '|';
             }
             std::cout << std::endl;
         }
