@@ -71,14 +71,14 @@ MINI_TYPE::SqlCommand Interpreter::ReadCommand() {
 MINI_TYPE::SqlCommand Interpreter::Parse(std::string input) {
     using namespace std;
 
-    auto token = strtok(const_cast<char *>(input.c_str()), ",;()\n\' ‘’");
+    auto token = strtok(const_cast<char *>(input.c_str()), ",;()\t\n\' ‘’");
 
     vector<string> tokens;
 
     while (token) {
         if (strcmp(token, "") != 0) {
             tokens.emplace_back(token);
-            token = strtok(nullptr, ",;()\n\' ‘’");
+            token = strtok(nullptr, ",;()\t\n\' ‘’");
         }
     }
 
