@@ -61,7 +61,6 @@ bool CatalogManager::CreateTable(MINI_TYPE::TableInfo& tableInfo){
     tableInfo.record_length = 0;
     for (auto &attr : tableInfo.attributes)
         tableInfo.record_length += attr.type.TypeSize();
-    AttachIndexToTable(tableInfo, tableInfo.primaryKey);
     tableInfos.push_back(tableInfo);
     return true;
 }
@@ -105,6 +104,7 @@ bool CatalogManager::DeleteIndex(std::string indexName) {
 
 bool CatalogManager::CreateIndex(std::string tableName, std::string attrName) {
     MINI_TYPE::IndexInfo indexInfo(tableName, attrName);
+    AttachIndexToTable(indexInfo);
     indexInfos.push_back(indexInfo);
     return true;
 }
