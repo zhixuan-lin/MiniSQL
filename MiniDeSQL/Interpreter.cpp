@@ -119,7 +119,7 @@ MINI_TYPE::SqlCommand Interpreter::Parse(std::string input) {
 MINI_TYPE::SqlCommand Interpreter::ParseCreateTable(std::vector<std::string> tokens) {
     using namespace MINI_TYPE;
 
-    if (tokens.size() <= 5)
+    if (tokens.size() < 5)
         throw SyntaxError("Too few arguments.");
 
     SqlCommand sqlCommand;
