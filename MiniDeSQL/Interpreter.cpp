@@ -32,10 +32,11 @@ void Interpreter::MainInteractive() {
                         }
                     }
 
-                    API::Execute(Parse(lines));
+                    if (API::Execute(Parse(lines)))
+                        cout << "Query OK" << endl;
                 }
-            } else
-                API::Execute(command);
+            } else if (API::Execute(command))
+                cout << "Query OK" << endl;
         }
         catch (MINI_TYPE::SyntaxError &err) {
             std::cerr << err.what() << std::endl;

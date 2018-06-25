@@ -29,35 +29,35 @@ bool API::Execute(MINI_TYPE::SqlCommand sqlCommand) {
     using namespace MINI_TYPE;
     switch (sqlCommand.commandType) {
         case CreateTableCmd:
-            CreateTable(sqlCommand.tableInfo);
+            return CreateTable(sqlCommand.tableInfo);
             break;
         case DropTableCmd:
-            DropTable(sqlCommand.tableName);
+            return DropTable(sqlCommand.tableName);
             break;
         case CreateIndexCmd:
-//            CreateIndex(sqlCommand.indexInfo);
+//          return CreateIndex(sqlCommand.indexInfo);
             break;
         case DropIndexCmd:
-            DropIndex(sqlCommand.indexName);
+            return DropIndex(sqlCommand.indexName);
             break;
         case SelectCmd:
-            Select(sqlCommand.tableName,
-                   sqlCommand.condArray,
-                   sqlCommand.attrList);
+            return Select(sqlCommand.tableName,
+                          sqlCommand.condArray,
+                          sqlCommand.attrList);
             break;
         case InsertCmd:
-            Insert(sqlCommand.tableName,
-                   sqlCommand.valueArray);
+            return Insert(sqlCommand.tableName,
+                          sqlCommand.valueArray);
             break;
         case DeleteCmd:
-            Delete(sqlCommand.tableName,
-                   sqlCommand.condArray);
+            return Delete(sqlCommand.tableName,
+                          sqlCommand.condArray);
             break;
         default:
             // DO NOTHING
             break;
     }
-    return true;
+    return false;
 }
 
 bool API::CreateTable(MINI_TYPE::TableInfo tableInfo) {
